@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=8 format=3 uid="uid://main_scene"]
 
 [ext_resource type="Script" path="res://scripts/core/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/ui/MainUI.gd" id="2_mainui"]
 [ext_resource type="PackedScene" uid="uid://building_panel" path="res://scenes/ui/BuildingPanel.tscn" id="3_building_panel"]
+[ext_resource type="PackedScene" uid="uid://diplomacy_panel" path="res://scenes/ui/DiplomacyPanel.tscn" id="4_diplomacy_panel"]
+[ext_resource type="PackedScene" uid="uid://battle_result_popup" path="res://scenes/ui/BattleResultPopup.tscn" id="5_battle_popup"]
+[ext_resource type="PackedScene" uid="uid://event_popup" path="res://scenes/ui/EventPopup.tscn" id="6_event_popup"]
+[ext_resource type="PackedScene" uid="uid://save_menu" path="res://scenes/ui/SaveMenu.tscn" id="7_save_menu"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -107,6 +111,10 @@ text = "Buildings"
 layout_mode = 2
 text = "Diplomacy"
 
+[node name="ButtonSave" type="Button" parent="UICanvas/TopBar/MarginContainer/VBox/RowButtons"]
+layout_mode = 2
+text = "Save / Load"
+
 [node name="BuildingPanel" parent="UICanvas" instance=ExtResource("3_building_panel")]
 visible = false
 layout_mode = 1
@@ -116,17 +124,46 @@ offset_top = 290.0
 offset_right = 336.0
 offset_bottom = 710.0
 
-[node name="DiplomacyPanel" type="Control" parent="UICanvas"]
+[node name="DiplomacyPanel" parent="UICanvas" instance=ExtResource("4_diplomacy_panel")]
 visible = false
 layout_mode = 1
 anchors_preset = 0
 offset_left = 16.0
 offset_top = 300.0
-offset_right = 320.0
-offset_bottom = 500.0
-script = null
+offset_right = 336.0
+offset_bottom = 720.0
 
-[node name="EventPopup" type="Control" parent="UICanvas"]
+[node name="BattleResultPopup" parent="UICanvas" instance=ExtResource("5_battle_popup")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EventPopup" parent="UICanvas" instance=ExtResource("6_event_popup")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -160.0
+offset_right = 220.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SaveMenu" parent="UICanvas" instance=ExtResource("7_save_menu")]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -135,12 +172,11 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -100.0
+offset_top = -180.0
 offset_right = 200.0
-offset_bottom = 100.0
+offset_bottom = 180.0
 grow_horizontal = 2
 grow_vertical = 2
-script = null
 
 [node name="GameOverScreen" type="Control" parent="UICanvas"]
 visible = false

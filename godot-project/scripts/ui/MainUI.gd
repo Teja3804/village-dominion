@@ -15,15 +15,20 @@ extends Control
 @onready var button_next_turn: Button = $MarginContainer/VBox/ButtonNextTurn
 @onready var button_building_placeholder: Button = $MarginContainer/VBox/RowButtons/ButtonBuilding
 @onready var button_diplomacy_placeholder: Button = $MarginContainer/VBox/RowButtons/ButtonDiplomacy
+@onready var button_save: Button = $MarginContainer/VBox/RowButtons/ButtonSave
 
 var _building_panel: Control = null
+var _diplomacy_panel: Control = null
+var _save_menu: Control = null
 
 
 func _ready() -> void:
-	# Building panel is a sibling under UICanvas (parent of TopBar).
+	# Building and Diplomacy panels are siblings under UICanvas (parent of TopBar).
 	var ui_canvas = get_parent()
 	if ui_canvas:
 		_building_panel = ui_canvas.get_node_or_null("BuildingPanel")
+		_diplomacy_panel = ui_canvas.get_node_or_null("DiplomacyPanel")
+		_save_menu = ui_canvas.get_node_or_null("SaveMenu")
 	if EventBus:
 		EventBus.resources_changed.connect(_refresh)
 		EventBus.turn_advanced.connect(_refresh)
@@ -84,5 +89,10 @@ func _on_building_placeholder_pressed() -> void:
 
 
 func _on_diplomacy_placeholder_pressed() -> void:
-	# Hook for future: open diplomacy panel.
-	pass
+	if _diplomacy_panel != null:
+		_diplomacy_panel.visible = !_diplomacy_panel.visible
+
+
+func _on_save_pressed() -> void:
+	if _save_menu != null and _save_menu.has_method("show_menu"):
+		_save_menu.show_menu()

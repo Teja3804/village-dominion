@@ -124,7 +124,10 @@ static func from_dict(d: Dictionary) -> Village:
 	var v = Village.new()
 	v.village_id = d.get("village_id", "")
 	v.display_name = d.get("display_name", "")
-	v.resources = d.get("resources", {}).duplicate()
+	var raw_res = d.get("resources", {})
+	v.resources = {}
+	for k in raw_res:
+		v.resources[int(k)] = raw_res[k]
 	v.population = d.get("population", 0)
 	v.max_population = d.get("max_population", 0)
 	v.military_strength = d.get("military_strength", 0)

@@ -8,9 +8,6 @@ var current_turn: int = 0
 var game_state: int = GameConstants.GameState.PLAYING
 var player_village: Village = null
 var ai_villages: Array = []  # Array of AIVillage
-var diplomacy_manager = null
-var event_manager = null
-
 var _building_database: BuildingDatabase = null
 var _tick_timer: Timer = null
 
@@ -43,6 +40,14 @@ func new_game() -> void:
 	game_state = GameConstants.GameState.PLAYING
 	player_village = _create_player_village()
 	ai_villages = _create_ai_villages()
+	if DiplomacyManager:
+		var ai_ids: Array = []
+		for ai in ai_villages:
+			var a = ai as AIVillage
+			if a:
+				ai_ids.append(a.village_id)
+		DiplomacyManager.init_relations("player", ai_ids)
+	sync_ai_relations_from_diplomacy()
 	_tick_timer.start()
 	_emit_state_signals()
 
@@ -90,49 +95,40 @@ func _create_ai_villages() -> Array:
 	var list: Array = []
 	var r = GameConstants.ResourceType
 	var p = GameConstants.PersonalityType
+	var b = GameConstants.BuildingType
 
-	var ai1 = AIVillage.new()
-	ai1.village_id = "ai_northbrook"
-	ai1.display_name = "Northbrook"
-	ai1.resources = { r.FOOD: 40, r.WOOD: 35, r.GOLD: 25, r.STONE: 15, r.IRON: 0 }
-	ai1.population = 4
-	ai1.max_population = 8
-	ai1.military_strength = 0
-	ai1.personality_type_id = p.MERCANTILE
-	ai1.relationship_with_player = 0
-	ai1.at_war = false
-	var ai1_farm = BuildingInstance.new()
-	ai1_farm.instance_id = "ai_northbrook_farm_0"
-	ai1_farm.building_type_id = GameConstants.BuildingType.FARM
-	ai1_farm.grid_x = 0
-	ai1_farm.grid_y = 0
-	ai1_farm.level = 1
-	ai1_farm.assigned_workers = 2
-	ai1.add_building(ai1_farm)
-	ai1.recalculate_max_population(_building_database)
-	ai1.recalculate_military_strength(_building_database)
-	list.append(ai1)
+	# 3–5 AI villages with name, population, resources, soldiers (military_strength), buildings, personality
+	var configs: Array = [
+		{ "id": "ai_northbrook", "name": "Northbrook", "personality": p.TRADER, "food": 40, "wood": 35, "gold": 25, "stone": 15, "pop": 4 },
+		{ "id": "ai_ironhold", "name": "Ironhold", "personality": p.AGGRESSIVE, "food": 30, "wood": 45, "gold": 20, "stone": 25, "pop": 3 },
+		{ "id": "ai_redrock", "name": "Redrock", "personality": p.DIPLOMATIC, "food": 35, "wood": 30, "gold": 30, "stone": 20, "pop": 4 },
+		{ "id": "ai_greenvale", "name": "Greenvale", "personality": p.OPPORTUNIST, "food": 45, "wood": 25, "gold": 22, "stone": 18, "pop": 5 },
+		{ "id": "ai_ashford", "name": "Ashford", "personality": p.AGGRESSIVE, "food": 28, "wood": 40, "gold": 18, "stone": 22, "pop": 3 }
+	]
 
-	var ai2 = AIVillage.new()
-	ai2.village_id = "ai_ironhold"
-	ai2.display_name = "Ironhold"
-	ai2.resources = { r.FOOD: 30, r.WOOD: 45, r.GOLD: 20, r.STONE: 25, r.IRON: 0 }
-	ai2.population = 3
-	ai2.max_population = 6
-	ai2.military_strength = 0
-	ai2.personality_type_id = p.AGGRESSIVE
-	ai2.relationship_with_player = 0
-	ai2.at_war = false
-	var ai2_barracks = BuildingInstance.new()
-	ai2_barracks.instance_id = "ai_ironhold_barracks_0"
-	ai2_barracks.building_type_id = GameConstants.BuildingType.BARRACKS
-	ai2_barracks.grid_x = 0
-	ai2_barracks.grid_y = 0
-	ai2_barracks.level = 1
-	ai2.add_building(ai2_barracks)
-	ai2.recalculate_max_population(_building_database)
-	ai2.recalculate_military_strength(_building_database)
-	list.append(ai2)
+	for cfg in configs:
+		var ai = AIVillage.new()
+		ai.village_id = cfg.id
+		ai.display_name = cfg.name
+		ai.resources = { r.FOOD: cfg.food, r.WOOD: cfg.wood, r.GOLD: cfg.gold, r.STONE: cfg.stone, r.IRON: 0 }
+		ai.population = cfg.pop
+		ai.max_population = 8
+		ai.military_strength = 0
+		ai.personality_type_id = cfg.personality
+		ai.relationship_with_player = 0
+		ai.at_war = false
+		# Starting building: one Farm so they can grow
+		var farm = BuildingInstance.new()
+		farm.instance_id = "%s_farm_0" % ai.village_id
+		farm.building_type_id = b.FARM
+		farm.grid_x = 0
+		farm.grid_y = 0
+		farm.level = 1
+		farm.assigned_workers = 2
+		ai.add_building(farm)
+		ai.recalculate_max_population(_building_database)
+		ai.recalculate_military_strength(_building_database)
+		list.append(ai)
 
 	return list
 
@@ -159,7 +155,20 @@ func advance_turn() -> void:
 		ai_v.recalculate_max_population(_building_database)
 		ai_v.recalculate_military_strength(_building_database)
 
+	# AI decisions: build buildings, recruit soldiers (barracks), adjust economy
+	if AIManager:
+		AIManager.process_tick(ai_villages, _building_database)
+	# AI diplomacy: every 5 ticks
+	if current_turn > 0 and current_turn % 5 == 0 and AIManager:
+		AIManager.process_diplomacy_tick(ai_villages)
+		sync_ai_relations_from_diplomacy()
+		if EventBus:
+			EventBus.diplomacy_updated.emit()
+
 	current_turn += 1
+	# World events: every 5–10 ticks (EventManager decides)
+	if EventManager:
+		EventManager.check_and_trigger(current_turn)
 	_emit_state_signals()
 
 
@@ -287,9 +296,93 @@ func get_player_production_per_tick() -> Dictionary:
 	return player_village.get_production_per_tick(_building_database)
 
 
+## Sync AIVillage.relationship_with_player and at_war from DiplomacyManager.
+func sync_ai_relations_from_diplomacy() -> void:
+	if not DiplomacyManager or player_village == null:
+		return
+	for ai in ai_villages:
+		var a = ai as AIVillage
+		if a == null:
+			continue
+		a.relationship_with_player = DiplomacyManager.get_relation("player", a.village_id)
+		a.at_war = DiplomacyManager.is_at_war("player", a.village_id)
+
+
+## Player performs a diplomacy action toward an AI village. Emits diplomacy_updated.
+func perform_diplomacy_action(action_type: int, ai_village_id: String) -> Dictionary:
+	if not DiplomacyManager or player_village == null:
+		return { "success": false, "message": "Diplomacy not available." }
+	var result: Dictionary
+	match action_type:
+		GameConstants.DiplomacyAction.TRADE:
+			result = DiplomacyManager.do_trade("player", ai_village_id)
+		GameConstants.DiplomacyAction.REQUEST_ALLIANCE:
+			result = DiplomacyManager.offer_alliance("player", ai_village_id)
+		GameConstants.DiplomacyAction.DECLARE_WAR:
+			result = DiplomacyManager.declare_war("player", ai_village_id)
+		GameConstants.DiplomacyAction.REQUEST_AID:
+			result = DiplomacyManager.request_aid("player", ai_village_id)
+		_:
+			return { "success": false, "message": "Unknown action." }
+	sync_ai_relations_from_diplomacy()
+	if EventBus:
+		EventBus.diplomacy_updated.emit()
+	return result
+
+
+func get_relation_to_ai(ai_village_id: String) -> int:
+	if not DiplomacyManager:
+		return 0
+	return DiplomacyManager.get_relation("player", ai_village_id)
+
+
+func is_allied_with_ai(ai_village_id: String) -> bool:
+	if not DiplomacyManager:
+		return false
+	return DiplomacyManager.is_allied("player", ai_village_id)
+
+
+func is_at_war_with_ai(ai_village_id: String) -> bool:
+	if not DiplomacyManager:
+		return false
+	return DiplomacyManager.is_at_war("player", ai_village_id)
+
+
+## Return Village (player or AI) by village_id. Used by BattleManager.
+func get_village_by_id(village_id: String) -> Village:
+	if player_village != null and player_village.village_id == village_id:
+		return player_village
+	for ai in ai_villages:
+		var v = ai as Village
+		if v != null and v.village_id == village_id:
+			return v
+	return null
+
+
 func check_victory_loss() -> void:
 	# Stub for later: set game_state and emit game_over when conditions met.
 	pass
+
+
+## Restore full game state from a save data dictionary. Called by SaveManager.load().
+func load_state(data: Dictionary) -> void:
+	current_turn = data.get("current_turn", 0)
+	game_state = data.get("game_state", GameConstants.GameState.PLAYING)
+	var pd = data.get("player_village", {})
+	if typeof(pd) == TYPE_DICTIONARY:
+		player_village = Village.from_dict(pd)
+		if _building_database:
+			player_village.recalculate_max_population(_building_database)
+			player_village.recalculate_military_strength(_building_database)
+	ai_villages.clear()
+	for ad in data.get("ai_villages", []):
+		if typeof(ad) == TYPE_DICTIONARY:
+			var ai = AIVillage.from_dict(ad)
+			if _building_database:
+				ai.recalculate_max_population(_building_database)
+				ai.recalculate_military_strength(_building_database)
+			ai_villages.append(ai)
+	_tick_timer.start()
 
 
 func save_game(path: String) -> bool:
@@ -301,4 +394,18 @@ func save_game(path: String) -> bool:
 func load_game(path: String) -> bool:
 	if SaveManager:
 		return SaveManager.load(path)
+	return false
+
+
+## Save to slot (1–3). Returns true on success.
+func save_game_to_slot(slot: int) -> bool:
+	if SaveManager:
+		return SaveManager.save_to_slot(slot)
+	return false
+
+
+## Load from slot (1–3). Returns true on success.
+func load_game_from_slot(slot: int) -> bool:
+	if SaveManager:
+		return SaveManager.load_from_slot(slot)
 	return false

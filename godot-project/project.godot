@@ -14,6 +14,10 @@ run/main_scene="res://scenes/main/Main.tscn"
 EventBus="*res://scripts/managers/EventBus.gd"
 GameManager="*res://scripts/managers/GameManager.gd"
 SaveManager="*res://scripts/managers/SaveManager.gd"
+AIManager="*res://scripts/managers/ai_manager.gd"
+DiplomacyManager="*res://scripts/managers/diplomacy_manager.gd"
+BattleManager="*res://scripts/managers/battle_manager.gd"
+EventManager="*res://scripts/managers/event_manager.gd"
 
 [display]
 

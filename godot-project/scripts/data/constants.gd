@@ -32,7 +32,11 @@ enum PersonalityType {
 	CAUTIOUS,
 	MERCANTILE,
 	PROUD,
-	PRAGMATIC
+	PRAGMATIC,
+	# AI simulation personalities (used by AIManager)
+	DIPLOMATIC,
+	TRADER,
+	OPPORTUNIST
 }
 
 enum DiplomacyAction {
@@ -43,7 +47,8 @@ enum DiplomacyAction {
 	OFFER_PEACE,
 	DEMAND_TRIBUTE,
 	REFUSE,
-	CANCEL_DEAL
+	CANCEL_DEAL,
+	REQUEST_AID
 }
 
 enum BattleType {
@@ -51,8 +56,22 @@ enum BattleType {
 	INVASION
 }
 
+enum BattleResult {
+	VICTORY,   # attacker wins
+	DEFEAT,    # defender wins
+	DRAW
+}
+
 enum GameState {
 	PLAYING,
 	VICTORY,
 	DEFEAT
+}
+
+enum WorldEventType {
+	FAMINE,
+	BANDIT_RAID,
+	HARVEST_FESTIVAL,
+	POLITICAL_DISPUTE,
+	TRADE_BOOM
 }
