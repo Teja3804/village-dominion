@@ -1,0 +1,22 @@
+# Godot
+.godot/
+*.translation
+
+# Saves (player data, not versioned)
+saves/*.json
+saves/*.save
+!saves/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Build / export
+export/
+*.zip

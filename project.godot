@@ -1,0 +1,29 @@
+; Village Dominion - Godot 4.x
+; See PROJECT_SCAFFOLDING.md for structure and setup.
+
+config_version=5
+
+[application]
+
+config/name="Village Dominion"
+run/main_scene="res://scenes/main/Main.tscn"
+
+[autoload]
+
+EventBus="*res://scripts/autoload/EventBus.gd"
+GameManager="*res://scripts/autoload/GameManager.gd"
+SaveManager="*res://scripts/autoload/SaveManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[layer_names]
+
+2d_physics/layer_1="default"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
