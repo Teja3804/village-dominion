@@ -1,5 +1,6 @@
 ; Village Dominion - Godot 4.x
-; See PROJECT_SCAFFOLDING.md for structure and setup.
+; Project lives in godot-project/; open this folder in Godot.
+; Docs: ../docs/MVP_SPEC.md, ../docs/DEV_ROADMAP.md
 
 config_version=5
 
@@ -10,9 +11,9 @@ run/main_scene="res://scenes/main/Main.tscn"
 
 [autoload]
 
-EventBus="*res://scripts/autoload/EventBus.gd"
-GameManager="*res://scripts/autoload/GameManager.gd"
-SaveManager="*res://scripts/autoload/SaveManager.gd"
+EventBus="*res://scripts/managers/EventBus.gd"
+GameManager="*res://scripts/managers/GameManager.gd"
+SaveManager="*res://scripts/managers/SaveManager.gd"
 
 [display]
 
