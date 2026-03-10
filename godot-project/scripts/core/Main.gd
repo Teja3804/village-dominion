@@ -22,6 +22,6 @@ func _on_game_loaded() -> void:
 	if game_over_screen:
 		game_over_screen.hide()
 
-func _input(event: InputEvent) -> void:
+func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_end_turn"):
 		GameManager.end_turn()

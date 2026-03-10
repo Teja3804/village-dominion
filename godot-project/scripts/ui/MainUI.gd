@@ -3,25 +3,65 @@
 
 extends Control
 
-@onready var top_bar: Control = $TopBar
-@onready var building_panel: Control = $BuildingPanel
-@onready var diplomacy_panel: Control = $DiplomacyPanel
-@onready var trade_panel: Control = $TradePanel
-@onready var event_popup: Control = $EventPopup
-@onready var battle_result_popup: Control = $BattleResultPopup
-@onready var save_menu: Control = $SaveMenu
-@onready var notification_log: RichTextLabel = $NotificationLog
-@onready var end_turn_button: Button = $EndTurnButton
-@onready var turn_label: Label = $TurnLabel
-@onready var year_label: Label = $YearLabel
+# Panels — found via get_node_or_null so no onready crash if names differ
+var building_panel: Control
+var diplomacy_panel: Control
+var trade_panel: Control
+var event_popup: Control
+var battle_result_popup: Control
+var save_menu: Control
+var notification_log: RichTextLabel
+var turn_label: Label
+var year_label: Label
+var top_bar: Control
 
 const MAX_LOG_ENTRIES: int = 50
 var log_entries: Array = []
 
 func _ready() -> void:
-	_connect_signals()
+	# Find nodes safely
+	top_bar             = get_node_or_null("TopBar")
+	building_panel      = get_node_or_null("BuildingPanel")
+	diplomacy_panel     = get_node_or_null("DiplomacyPanel")
+	trade_panel         = get_node_or_null("TradePanel")
+	event_popup         = get_node_or_null("EventPopup")
+	battle_result_popup = get_node_or_null("BattleResultPopup")
+	save_menu           = get_node_or_null("SaveMenu")
+	notification_log    = get_node_or_null("NotificationLog")
+	turn_label          = get_node_or_null("TurnLabel")
+	year_label          = get_node_or_null("YearLabel")
+
 	_hide_all_panels()
+	_build_nav_buttons()
+	_connect_signals()
 	_update_turn_display()
+
+func _build_nav_buttons() -> void:
+	# Create a clearly visible button bar in the center of the screen
+	var bar = HBoxContainer.new()
+	bar.name = "NavBar"
+	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	bar.offset_top = -120.0
+	bar.offset_bottom = -90.0
+	bar.offset_left = 10.0
+	bar.offset_right = -10.0
+	bar.alignment = BoxContainer.ALIGNMENT_CENTER
+	bar.add_theme_constant_override("separation", 16)
+	add_child(bar)
+
+	var btns = [
+		["Build (B)", func(): _open_panel("building")],
+		["Diplomacy (D)", func(): _open_panel("diplomacy")],
+		["Trade (T)", func(): _open_panel("trade")],
+		["Save/Load", func(): _open_panel("save")],
+		["End Turn", func(): GameManager.end_turn()],
+	]
+	for b in btns:
+		var btn = Button.new()
+		btn.text = b[0]
+		btn.custom_minimum_size = Vector2(140, 40)
+		btn.pressed.connect(b[1])
+		bar.add_child(btn)
 
 func _connect_signals() -> void:
 	EventBus.notification_posted.connect(_on_notification)
@@ -33,16 +73,44 @@ func _connect_signals() -> void:
 	EventBus.panel_close_requested.connect(_on_panel_close_requested)
 	EventBus.player_village_updated.connect(_on_player_updated)
 
-	if end_turn_button:
-		end_turn_button.pressed.connect(_on_end_turn_pressed)
-
 func _hide_all_panels() -> void:
 	for panel in [building_panel, diplomacy_panel, trade_panel, save_menu]:
 		if panel:
 			panel.hide()
 
-func _on_end_turn_pressed() -> void:
-	GameManager.end_turn()
+func _open_panel(name: String) -> void:
+	EventBus.panel_open_requested.emit(name, {})
+
+func _on_panel_open_requested(panel_name: String, data: Dictionary) -> void:
+	_hide_all_panels()
+	match panel_name:
+		"building":
+			if building_panel:
+				building_panel.refresh()
+				building_panel.show()
+				building_panel.move_to_front()
+		"diplomacy":
+			if diplomacy_panel:
+				diplomacy_panel.refresh(data)
+				diplomacy_panel.show()
+				diplomacy_panel.move_to_front()
+		"trade":
+			if trade_panel:
+				trade_panel.refresh(data)
+				trade_panel.show()
+				trade_panel.move_to_front()
+		"save":
+			if save_menu:
+				save_menu.refresh()
+				save_menu.show()
+				save_menu.move_to_front()
+
+func _on_panel_close_requested(panel_name: String) -> void:
+	match panel_name:
+		"building":   if building_panel:   building_panel.hide()
+		"diplomacy":  if diplomacy_panel:  diplomacy_panel.hide()
+		"trade":      if trade_panel:      trade_panel.hide()
+		"save":       if save_menu:        save_menu.hide()
 
 func _on_turn_started(_turn: int) -> void:
 	_update_turn_display()
@@ -74,71 +142,36 @@ func _on_notification(message: String, severity: String) -> void:
 		notification_log.scroll_to_line(notification_log.get_line_count())
 
 func _on_world_event(event: Dictionary) -> void:
-	if event_popup and event.get("village_id", -1) == GameManager.player_village.village_id:
+	if event_popup and GameManager.player_village and event.get("village_id", -1) == GameManager.player_village.village_id:
 		event_popup.show_event(event)
 		event_popup.show()
+		event_popup.move_to_front()
 
 func _on_battle_resolved(result: Dictionary) -> void:
+	if GameManager.player_village == null:
+		return
 	var player_id = GameManager.player_village.village_id
 	if result.get("attacker_id") == player_id or result.get("defender_id") == player_id:
 		if battle_result_popup:
 			battle_result_popup.show_result(result)
 			battle_result_popup.show()
-
-func _on_panel_open_requested(panel_name: String, data: Dictionary) -> void:
-	match panel_name:
-		"building":
-			if building_panel:
-				building_panel.refresh()
-				building_panel.show()
-		"diplomacy":
-			if diplomacy_panel:
-				diplomacy_panel.refresh(data)
-				diplomacy_panel.show()
-		"trade":
-			if trade_panel:
-				trade_panel.refresh(data)
-				trade_panel.show()
-		"save":
-			if save_menu:
-				save_menu.refresh()
-				save_menu.show()
-
-func _on_panel_close_requested(panel_name: String) -> void:
-	match panel_name:
-		"building":
-			if building_panel:
-				building_panel.hide()
-		"diplomacy":
-			if diplomacy_panel:
-				diplomacy_panel.hide()
-		"trade":
-			if trade_panel:
-				trade_panel.hide()
-		"save":
-			if save_menu:
-				save_menu.hide()
+			battle_result_popup.move_to_front()
 
 func _severity_color(severity: String) -> String:
 	match severity:
-		"danger": return "#ff4444"
+		"danger":  return "#ff4444"
 		"warning": return "#ffaa00"
 		"success": return "#44ff88"
-		"info": return "#aaddff"
-		_: return "#ffffff"
+		"info":    return "#aaddff"
+		_:         return "#ffffff"
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		match event.keycode:
-			KEY_B:
-				EventBus.panel_open_requested.emit("building", {})
-			KEY_D:
-				EventBus.panel_open_requested.emit("diplomacy", {})
-			KEY_T:
-				EventBus.panel_open_requested.emit("trade", {})
-			KEY_ESCAPE:
-				_hide_all_panels()
-			KEY_F5:
-				EventBus.save_requested.emit(1)
-			KEY_F9:
-				EventBus.load_requested.emit(1)
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not event.pressed:
+		return
+	match (event as InputEventKey).keycode:
+		KEY_B:       _open_panel("building")
+		KEY_D:       _open_panel("diplomacy")
+		KEY_T:       _open_panel("trade")
+		KEY_ESCAPE:  _hide_all_panels()
+		KEY_F5:      EventBus.save_requested.emit(1)
+		KEY_F9:      EventBus.load_requested.emit(1)
