@@ -24,6 +24,9 @@ func refresh(data: Dictionary) -> void:
 		title_label.text = "Diplomacy"
 	if detail_panel:
 		detail_panel.hide()
+	# Auto-select village if passed from world map click
+	if data.has("selected_id"):
+		selected_village_id = data["selected_id"]
 
 	if village_list == null:
 		return
@@ -37,6 +40,10 @@ func refresh(data: Dictionary) -> void:
 			continue
 		var row = _create_village_row(player, v)
 		village_list.add_child(row)
+
+	# Auto-select after list is built
+	if selected_village_id >= 0:
+		_select_village(selected_village_id)
 
 func _create_village_row(player: Village, v: Village) -> Control:
 	var btn = Button.new()

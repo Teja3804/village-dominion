@@ -31,10 +31,21 @@ func _ready() -> void:
 	turn_label          = get_node_or_null("TurnLabel")
 	year_label          = get_node_or_null("YearLabel")
 
+	_spawn_world_map()
 	_hide_all_panels()
 	_build_nav_buttons()
 	_connect_signals()
 	_update_turn_display()
+
+func _spawn_world_map() -> void:
+	var map = load("res://scripts/ui/WorldMapView.gd").new()
+	map.name = "WorldMap"
+	map.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# Leave room for top bar (55px) and nav buttons (55px at bottom)
+	map.offset_top = 55.0
+	map.offset_bottom = -130.0
+	add_child(map)
+	move_child(map, 0)  # behind panels
 
 func _build_nav_buttons() -> void:
 	# Create a clearly visible button bar in the center of the screen
