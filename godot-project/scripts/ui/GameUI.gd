@@ -475,8 +475,8 @@ func _make_trade_panel() -> Control:
 		list.add_child(lbl)
 	else:
 		for vid in player.trade_routes:
-			var route := player.trade_routes[vid]
-			var partner := GameManager.get_village_by_id(vid)
+			var route: Dictionary = player.trade_routes[vid]
+			var partner: Village = GameManager.get_village_by_id(vid)
 			if partner == null:
 				continue
 			var row := HBoxContainer.new()
