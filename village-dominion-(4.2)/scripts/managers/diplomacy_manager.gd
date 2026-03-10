@@ -97,10 +97,10 @@ func _break_alliance(actor: Village, target: Village) -> Dictionary:
 	return {"success": true, "message": "You broke your alliance with %s." % target.village_name}
 
 func _send_gift(actor: Village, target: Village, gold_amount: int) -> Dictionary:
-	if not actor.consume_resource(Constants.ResourceType.GOLD, gold_amount):
+	if not actor.consume_resource(Constants.Resource.GOLD, gold_amount):
 		return {"success": false, "message": "Not enough gold to send as gift."}
 
-	target.add_resource(Constants.ResourceType.GOLD, gold_amount)
+	target.add_resource(Constants.Resource.GOLD, gold_amount)
 	actor.change_relationship(target.village_id, Constants.RELATION_CHANGE_GIFT)
 	target.change_relationship(actor.village_id, Constants.RELATION_CHANGE_GIFT)
 	EventBus.relationship_changed.emit(actor.village_id, target.village_id, actor.get_relationship(target.village_id))
@@ -110,16 +110,16 @@ func _request_aid(actor: Village, target: Village) -> Dictionary:
 	if not actor.is_allied_with(target.village_id):
 		return {"success": false, "message": "Only allies will send aid."}
 
-	var aid_food = min(50, target.get_resource(Constants.ResourceType.FOOD) / 4)
-	var aid_gold = min(30, target.get_resource(Constants.ResourceType.GOLD) / 4)
+	var aid_food = min(50, target.get_resource(Constants.Resource.FOOD) / 4)
+	var aid_gold = min(30, target.get_resource(Constants.Resource.GOLD) / 4)
 
 	if aid_food == 0 and aid_gold == 0:
 		return {"success": false, "message": "%s has nothing to spare." % target.village_name}
 
-	target.consume_resource(Constants.ResourceType.FOOD, aid_food)
-	target.consume_resource(Constants.ResourceType.GOLD, aid_gold)
-	actor.add_resource(Constants.ResourceType.FOOD, aid_food)
-	actor.add_resource(Constants.ResourceType.GOLD, aid_gold)
+	target.consume_resource(Constants.Resource.FOOD, aid_food)
+	target.consume_resource(Constants.Resource.GOLD, aid_gold)
+	actor.add_resource(Constants.Resource.FOOD, aid_food)
+	actor.add_resource(Constants.Resource.GOLD, aid_gold)
 	actor.change_relationship(target.village_id, Constants.RELATION_CHANGE_AID)
 	return {
 		"success": true,
@@ -133,9 +133,9 @@ func _propose_trade(actor: Village, target: Village, extra: Dictionary) -> Dicti
 	var accepts = _ai_considers_trade(target, actor, extra)
 	if accepts:
 		var route = {
-			"resource_give": extra.get("resource_give", Constants.ResourceType.WOOD),
+			"resource_give": extra.get("resource_give", Constants.Resource.WOOD),
 			"amount_give": extra.get("amount_give", 20),
-			"resource_receive": extra.get("resource_receive", Constants.ResourceType.GOLD),
+			"resource_receive": extra.get("resource_receive", Constants.Resource.GOLD),
 			"amount_receive": extra.get("amount_receive", 15)
 		}
 		actor.trade_routes[target.village_id] = route
@@ -235,8 +235,8 @@ func execute_ai_action(action: Dictionary, all_villages: Array) -> void:
 				target.relationships[actor.village_id] = -20
 		"send_gift":
 			var amount = action.get("amount", 20)
-			if actor.consume_resource(Constants.ResourceType.GOLD, amount):
-				target.add_resource(Constants.ResourceType.GOLD, amount)
+			if actor.consume_resource(Constants.Resource.GOLD, amount):
+				target.add_resource(Constants.Resource.GOLD, amount)
 				actor.change_relationship(target.village_id, Constants.RELATION_CHANGE_GIFT)
 				target.change_relationship(actor.village_id, Constants.RELATION_CHANGE_GIFT)
 				if target.is_player:
@@ -244,9 +244,9 @@ func execute_ai_action(action: Dictionary, all_villages: Array) -> void:
 		"propose_trade":
 			if _ai_considers_trade(target, actor, action):
 				var route = {
-					"resource_give": action.get("resource_give", Constants.ResourceType.WOOD),
+					"resource_give": action.get("resource_give", Constants.Resource.WOOD),
 					"amount_give": action.get("amount_give", 20),
-					"resource_receive": action.get("resource_receive", Constants.ResourceType.GOLD),
+					"resource_receive": action.get("resource_receive", Constants.Resource.GOLD),
 					"amount_receive": action.get("amount_receive", 15)
 				}
 				actor.trade_routes[target.village_id] = route

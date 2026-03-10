@@ -169,8 +169,8 @@ func _apply_event(event_def: Dictionary, village: Village) -> void:
 	match event_def["effect"]:
 		"food_production_halved":
 			# Remove half of current food
-			var loss = village.get_resource(Constants.ResourceType.FOOD) / 4
-			village.consume_resource(Constants.ResourceType.FOOD, loss)
+			var loss = village.get_resource(Constants.Resource.FOOD) / 4
+			village.consume_resource(Constants.Resource.FOOD, loss)
 
 		"population_loss":
 			var loss = max(1, int(village.population * 0.1))
@@ -178,16 +178,16 @@ func _apply_event(event_def: Dictionary, village: Village) -> void:
 			village.soldiers = min(village.soldiers, village.population - 1)
 
 		"resource_loss":
-			var gold_loss = min(30, village.get_resource(Constants.ResourceType.GOLD))
-			var food_loss = min(50, village.get_resource(Constants.ResourceType.FOOD))
-			village.consume_resource(Constants.ResourceType.GOLD, gold_loss)
-			village.consume_resource(Constants.ResourceType.FOOD, food_loss)
+			var gold_loss = min(30, village.get_resource(Constants.Resource.GOLD))
+			var food_loss = min(50, village.get_resource(Constants.Resource.FOOD))
+			village.consume_resource(Constants.Resource.GOLD, gold_loss)
+			village.consume_resource(Constants.Resource.FOOD, food_loss)
 
 		"bonus_food":
-			village.add_resource(Constants.ResourceType.FOOD, 80)
+			village.add_resource(Constants.Resource.FOOD, 80)
 
 		"bonus_gold":
-			village.add_resource(Constants.ResourceType.GOLD, 40)
+			village.add_resource(Constants.Resource.GOLD, 40)
 			village.total_gold_earned += 40
 
 		"morale_loss":
@@ -214,9 +214,9 @@ func _apply_event(event_def: Dictionary, village: Village) -> void:
 			pass
 
 		"bonus_resources":
-			village.add_resource(Constants.ResourceType.GOLD, 25)
-			village.add_resource(Constants.ResourceType.WOOD, 30)
-			village.add_resource(Constants.ResourceType.STONE, 20)
+			village.add_resource(Constants.Resource.GOLD, 25)
+			village.add_resource(Constants.Resource.WOOD, 30)
+			village.add_resource(Constants.Resource.STONE, 20)
 
 		"population_gain":
 			if village.population < village.max_population:

@@ -17,11 +17,11 @@ var leader_name: String = "Unknown"
 
 # Resources
 var resources: Dictionary = {
-	Constants.ResourceType.FOOD: 0,
-	Constants.ResourceType.WOOD: 0,
-	Constants.ResourceType.STONE: 0,
-	Constants.ResourceType.GOLD: 0,
-	Constants.ResourceType.WEAPONS: 0
+	Constants.Resource.FOOD: 0,
+	Constants.Resource.WOOD: 0,
+	Constants.Resource.STONE: 0,
+	Constants.Resource.GOLD: 0,
+	Constants.Resource.WEAPONS: 0
 }
 
 # Storage
@@ -62,11 +62,11 @@ func _ready() -> void:
 	_initialize_resources()
 
 func _initialize_resources() -> void:
-	resources[Constants.ResourceType.FOOD] = Constants.STARTING_FOOD
-	resources[Constants.ResourceType.WOOD] = Constants.STARTING_WOOD
-	resources[Constants.ResourceType.STONE] = Constants.STARTING_STONE
-	resources[Constants.ResourceType.GOLD] = Constants.STARTING_GOLD
-	resources[Constants.ResourceType.WEAPONS] = Constants.STARTING_WEAPONS
+	resources[Constants.Resource.FOOD] = Constants.STARTING_FOOD
+	resources[Constants.Resource.WOOD] = Constants.STARTING_WOOD
+	resources[Constants.Resource.STONE] = Constants.STARTING_STONE
+	resources[Constants.Resource.GOLD] = Constants.STARTING_GOLD
+	resources[Constants.Resource.WEAPONS] = Constants.STARTING_WEAPONS
 
 # --- Resource Management ---
 
@@ -203,18 +203,18 @@ func process_turn() -> Dictionary:
 
 	# Consume food for population
 	var food_needed = int(population * Constants.FOOD_PER_VILLAGER)
-	if not consume_resource(Constants.ResourceType.FOOD, food_needed):
+	if not consume_resource(Constants.Resource.FOOD, food_needed):
 		# Not enough food — morale drops, possible population loss
 		morale = max(0, morale - 10)
 		if morale < 20 and randf() < 0.3:
 			population = max(1, population - int(population * 0.05))
 			report["events"].append("Famine: population declined")
 	else:
-		report["consumed"][Constants.ResourceType.FOOD] = food_needed
+		report["consumed"][Constants.Resource.FOOD] = food_needed
 
 	# Consume gold for soldier upkeep
 	var gold_needed = soldiers * Constants.SOLDIER_UPKEEP_GOLD
-	if not consume_resource(Constants.ResourceType.GOLD, gold_needed):
+	if not consume_resource(Constants.Resource.GOLD, gold_needed):
 		# Can't pay soldiers — some desert
 		var deserters = min(soldiers, int(soldiers * 0.2))
 		soldiers -= deserters
@@ -231,7 +231,7 @@ func process_turn() -> Dictionary:
 		morale = min(70, morale + 2)
 
 	# Grow population if conditions good
-	if population < max_population and resources[Constants.ResourceType.FOOD] > 50 and morale > 50:
+	if population < max_population and resources[Constants.Resource.FOOD] > 50 and morale > 50:
 		if randf() < 0.3:
 			population += 1
 			population_changed.emit(self)
@@ -256,8 +256,8 @@ func train_soldiers(count: int) -> bool:
 	if population <= soldiers + count:
 		return false
 	var cost = {
-		Constants.ResourceType.GOLD: count * 10,
-		Constants.ResourceType.WEAPONS: count * 2
+		Constants.Resource.GOLD: count * 10,
+		Constants.Resource.WEAPONS: count * 2
 	}
 	if not pay_cost(cost):
 		return false

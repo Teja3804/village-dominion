@@ -1,0 +1,116 @@
+{
+  "buildings": [
+    {
+      "id": 0,
+      "name": "Town Hall",
+      "description": "The heart of your village. Upgrade to unlock new buildings.",
+      "max_level": 5,
+      "max_count": 1,
+      "base_cost": {"food": 0, "wood": 100, "stone": 100, "gold": 50},
+      "population_capacity_per_level": 5,
+      "defense_bonus_per_level": 0
+    },
+    {
+      "id": 1,
+      "name": "House",
+      "description": "Provides housing for villagers.",
+      "max_level": 3,
+      "max_count": 10,
+      "base_cost": {"wood": 30, "stone": 10},
+      "population_capacity_per_level": 4
+    },
+    {
+      "id": 2,
+      "name": "Farm",
+      "description": "Produces food each turn.",
+      "max_level": 3,
+      "max_count": 8,
+      "base_cost": {"wood": 20, "gold": 10},
+      "production_per_turn": {"food": 15}
+    },
+    {
+      "id": 3,
+      "name": "Lumber Mill",
+      "description": "Produces wood each turn.",
+      "max_level": 3,
+      "max_count": 5,
+      "base_cost": {"wood": 40, "gold": 15},
+      "production_per_turn": {"wood": 12}
+    },
+    {
+      "id": 4,
+      "name": "Quarry",
+      "description": "Mines stone each turn.",
+      "max_level": 3,
+      "max_count": 5,
+      "base_cost": {"wood": 30, "stone": 20},
+      "production_per_turn": {"stone": 10}
+    },
+    {
+      "id": 5,
+      "name": "Market",
+      "description": "Generates gold and enables trade.",
+      "max_level": 3,
+      "max_count": 3,
+      "base_cost": {"wood": 50, "stone": 30, "gold": 20},
+      "production_per_turn": {"gold": 8},
+      "requires": "Town Hall"
+    },
+    {
+      "id": 6,
+      "name": "Barracks",
+      "description": "Enables training soldiers.",
+      "max_level": 3,
+      "max_count": 3,
+      "base_cost": {"wood": 60, "stone": 40, "gold": 30},
+      "requires": "Town Hall"
+    },
+    {
+      "id": 7,
+      "name": "Blacksmith",
+      "description": "Forges weapons, boosting soldier power.",
+      "max_level": 3,
+      "max_count": 2,
+      "base_cost": {"stone": 50, "gold": 40},
+      "production_per_turn": {"weapons": 5},
+      "requires": "Barracks"
+    },
+    {
+      "id": 8,
+      "name": "Walls",
+      "description": "Defensive fortifications.",
+      "max_level": 3,
+      "max_count": 1,
+      "base_cost": {"stone": 80, "wood": 40},
+      "defense_bonus_per_level": 20
+    },
+    {
+      "id": 9,
+      "name": "Watchtower",
+      "description": "Detects attacks early, boosts defense.",
+      "max_level": 2,
+      "max_count": 3,
+      "base_cost": {"wood": 30, "stone": 20},
+      "defense_bonus_per_level": 10
+    },
+    {
+      "id": 10,
+      "name": "Warehouse",
+      "description": "Increases resource storage capacity.",
+      "max_level": 3,
+      "max_count": 3,
+      "base_cost": {"wood": 40, "stone": 30},
+      "storage_bonus_per_level": 200
+    },
+    {
+      "id": 11,
+      "name": "Temple",
+      "description": "Boosts morale and attracts migrants.",
+      "max_level": 2,
+      "max_count": 1,
+      "base_cost": {"stone": 60, "gold": 50},
+      "requires": "Town Hall",
+      "requires_level": 2
+    }
+  ]
+}

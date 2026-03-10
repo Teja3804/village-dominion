@@ -23,11 +23,11 @@ func refresh() -> void:
 	if v == null:
 		return
 
-	_set_label(food_label, "Food: %d" % v.get_resource(Constants.ResourceType.FOOD))
-	_set_label(wood_label, "Wood: %d" % v.get_resource(Constants.ResourceType.WOOD))
-	_set_label(stone_label, "Stone: %d" % v.get_resource(Constants.ResourceType.STONE))
-	_set_label(gold_label, "Gold: %d" % v.get_resource(Constants.ResourceType.GOLD))
-	_set_label(weapons_label, "Weapons: %d" % v.get_resource(Constants.ResourceType.WEAPONS))
+	_set_label(food_label, "Food: %d" % v.get_resource(Constants.Resource.FOOD))
+	_set_label(wood_label, "Wood: %d" % v.get_resource(Constants.Resource.WOOD))
+	_set_label(stone_label, "Stone: %d" % v.get_resource(Constants.Resource.STONE))
+	_set_label(gold_label, "Gold: %d" % v.get_resource(Constants.Resource.GOLD))
+	_set_label(weapons_label, "Weapons: %d" % v.get_resource(Constants.Resource.WEAPONS))
 	_set_label(population_label, "Pop: %d/%d" % [v.population, v.max_population])
 	_set_label(soldiers_label, "Soldiers: %d" % v.soldiers)
 	_set_label(morale_label, "Morale: %d" % v.morale)

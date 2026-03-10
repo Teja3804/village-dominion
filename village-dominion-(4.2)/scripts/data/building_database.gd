@@ -33,7 +33,7 @@ func _add_town_hall() -> void:
 	b.description = "The heart of your village. Upgrade to unlock new buildings and raise village level."
 	b.max_level = 5
 	b.max_count = 1
-	b.base_cost = {Constants.ResourceType.WOOD: 100, Constants.ResourceType.STONE: 100, Constants.ResourceType.GOLD: 50}
+	b.base_cost = {Constants.Resource.WOOD: 100, Constants.Resource.STONE: 100, Constants.Resource.GOLD: 50}
 	b.population_capacity = 5
 	b.requires_building = -1
 	buildings[b.id] = b
@@ -45,7 +45,7 @@ func _add_house() -> void:
 	b.description = "Provides housing for villagers. More houses = more workers."
 	b.max_level = 3
 	b.max_count = 10
-	b.base_cost = {Constants.ResourceType.WOOD: 30, Constants.ResourceType.STONE: 10}
+	b.base_cost = {Constants.Resource.WOOD: 30, Constants.Resource.STONE: 10}
 	b.population_capacity = 4
 	buildings[b.id] = b
 
@@ -56,8 +56,8 @@ func _add_farm() -> void:
 	b.description = "Produces food to feed your villagers and soldiers."
 	b.max_level = 3
 	b.max_count = 8
-	b.base_cost = {Constants.ResourceType.WOOD: 20, Constants.ResourceType.GOLD: 10}
-	b.production_per_turn = {Constants.ResourceType.FOOD: 15}
+	b.base_cost = {Constants.Resource.WOOD: 20, Constants.Resource.GOLD: 10}
+	b.production_per_turn = {Constants.Resource.FOOD: 15}
 	buildings[b.id] = b
 
 func _add_lumber_mill() -> void:
@@ -67,8 +67,8 @@ func _add_lumber_mill() -> void:
 	b.description = "Chops wood for construction and trade."
 	b.max_level = 3
 	b.max_count = 5
-	b.base_cost = {Constants.ResourceType.WOOD: 40, Constants.ResourceType.GOLD: 15}
-	b.production_per_turn = {Constants.ResourceType.WOOD: 12}
+	b.base_cost = {Constants.Resource.WOOD: 40, Constants.Resource.GOLD: 15}
+	b.production_per_turn = {Constants.Resource.WOOD: 12}
 	buildings[b.id] = b
 
 func _add_quarry() -> void:
@@ -78,8 +78,8 @@ func _add_quarry() -> void:
 	b.description = "Mines stone for buildings and walls."
 	b.max_level = 3
 	b.max_count = 5
-	b.base_cost = {Constants.ResourceType.WOOD: 30, Constants.ResourceType.STONE: 20}
-	b.production_per_turn = {Constants.ResourceType.STONE: 10}
+	b.base_cost = {Constants.Resource.WOOD: 30, Constants.Resource.STONE: 20}
+	b.production_per_turn = {Constants.Resource.STONE: 10}
 	buildings[b.id] = b
 
 func _add_market() -> void:
@@ -89,8 +89,8 @@ func _add_market() -> void:
 	b.description = "Generates gold and enables trade with other villages."
 	b.max_level = 3
 	b.max_count = 3
-	b.base_cost = {Constants.ResourceType.WOOD: 50, Constants.ResourceType.STONE: 30, Constants.ResourceType.GOLD: 20}
-	b.production_per_turn = {Constants.ResourceType.GOLD: 8}
+	b.base_cost = {Constants.Resource.WOOD: 50, Constants.Resource.STONE: 30, Constants.Resource.GOLD: 20}
+	b.production_per_turn = {Constants.Resource.GOLD: 8}
 	b.requires_building = Constants.BuildingType.TOWN_HALL
 	buildings[b.id] = b
 
@@ -101,7 +101,7 @@ func _add_barracks() -> void:
 	b.description = "Train soldiers to defend your village and attack enemies."
 	b.max_level = 3
 	b.max_count = 3
-	b.base_cost = {Constants.ResourceType.WOOD: 60, Constants.ResourceType.STONE: 40, Constants.ResourceType.GOLD: 30}
+	b.base_cost = {Constants.Resource.WOOD: 60, Constants.Resource.STONE: 40, Constants.Resource.GOLD: 30}
 	b.production_per_turn = {}
 	b.requires_building = Constants.BuildingType.TOWN_HALL
 	buildings[b.id] = b
@@ -113,8 +113,8 @@ func _add_blacksmith() -> void:
 	b.description = "Forges weapons, increasing soldier effectiveness."
 	b.max_level = 3
 	b.max_count = 2
-	b.base_cost = {Constants.ResourceType.STONE: 50, Constants.ResourceType.GOLD: 40}
-	b.production_per_turn = {Constants.ResourceType.WEAPONS: 5}
+	b.base_cost = {Constants.Resource.STONE: 50, Constants.Resource.GOLD: 40}
+	b.production_per_turn = {Constants.Resource.WEAPONS: 5}
 	b.requires_building = Constants.BuildingType.BARRACKS
 	buildings[b.id] = b
 
@@ -125,7 +125,7 @@ func _add_walls() -> void:
 	b.description = "Defensive fortifications that protect against attacks."
 	b.max_level = 3
 	b.max_count = 1
-	b.base_cost = {Constants.ResourceType.STONE: 80, Constants.ResourceType.WOOD: 40}
+	b.base_cost = {Constants.Resource.STONE: 80, Constants.Resource.WOOD: 40}
 	b.defense_bonus = 20
 	buildings[b.id] = b
 
@@ -136,7 +136,7 @@ func _add_watchtower() -> void:
 	b.description = "Detects incoming attacks early and boosts defense."
 	b.max_level = 2
 	b.max_count = 3
-	b.base_cost = {Constants.ResourceType.WOOD: 30, Constants.ResourceType.STONE: 20}
+	b.base_cost = {Constants.Resource.WOOD: 30, Constants.Resource.STONE: 20}
 	b.defense_bonus = 10
 	buildings[b.id] = b
 
@@ -147,7 +147,7 @@ func _add_warehouse() -> void:
 	b.description = "Increases resource storage capacity."
 	b.max_level = 3
 	b.max_count = 3
-	b.base_cost = {Constants.ResourceType.WOOD: 40, Constants.ResourceType.STONE: 30}
+	b.base_cost = {Constants.Resource.WOOD: 40, Constants.Resource.STONE: 30}
 	buildings[b.id] = b
 
 func _add_temple() -> void:
@@ -157,7 +157,7 @@ func _add_temple() -> void:
 	b.description = "Boosts villager morale, reducing rebellion chance and attracting migrants."
 	b.max_level = 2
 	b.max_count = 1
-	b.base_cost = {Constants.ResourceType.STONE: 60, Constants.ResourceType.GOLD: 50}
+	b.base_cost = {Constants.Resource.STONE: 60, Constants.Resource.GOLD: 50}
 	b.requires_building = Constants.BuildingType.TOWN_HALL
 	b.requires_level = 2
 	buildings[b.id] = b

@@ -4,7 +4,7 @@
 extends Node
 
 # Resource Types
-enum ResourceType {
+enum Resource {
 	FOOD,
 	WOOD,
 	STONE,
@@ -13,11 +13,11 @@ enum ResourceType {
 }
 
 const RESOURCE_NAMES: Dictionary = {
-	ResourceType.FOOD: "Food",
-	ResourceType.WOOD: "Wood",
-	ResourceType.STONE: "Stone",
-	ResourceType.GOLD: "Gold",
-	ResourceType.WEAPONS: "Weapons"
+	Resource.FOOD: "Food",
+	Resource.WOOD: "Wood",
+	Resource.STONE: "Stone",
+	Resource.GOLD: "Gold",
+	Resource.WEAPONS: "Weapons"
 }
 
 # Building Types

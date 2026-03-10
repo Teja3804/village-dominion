@@ -27,18 +27,18 @@ func _apply_personality_modifiers() -> void:
 	match personality:
 		Constants.Personality.AGGRESSIVE:
 			soldiers = 12
-			resources[Constants.ResourceType.WEAPONS] = 40
+			resources[Constants.Resource.WEAPONS] = 40
 		Constants.Personality.DIPLOMATIC:
-			resources[Constants.ResourceType.GOLD] = 80
+			resources[Constants.Resource.GOLD] = 80
 			morale = 80
 		Constants.Personality.TRADER:
-			resources[Constants.ResourceType.GOLD] = 100
-			resources[Constants.ResourceType.WOOD] = 200
+			resources[Constants.Resource.GOLD] = 100
+			resources[Constants.Resource.WOOD] = 200
 		Constants.Personality.OPPORTUNIST:
 			soldiers = 8
-			resources[Constants.ResourceType.GOLD] = 60
+			resources[Constants.Resource.GOLD] = 60
 		Constants.Personality.ISOLATIONIST:
-			resources[Constants.ResourceType.STONE] = 200
+			resources[Constants.Resource.STONE] = 200
 			# Will have strong walls
 
 func decide_turn(all_villages: Array) -> Array:
@@ -84,7 +84,7 @@ func _aggressive_decisions(all_villages: Array) -> Array:
 					actions.append({"type": "declare_war", "target_id": v.village_id})
 
 	# Train more soldiers
-	if soldiers < 20 and resources[Constants.ResourceType.GOLD] > 50:
+	if soldiers < 20 and resources[Constants.Resource.GOLD] > 50:
 		actions.append({"type": "train_soldiers", "count": 3})
 
 	return actions
@@ -103,7 +103,7 @@ func _diplomatic_decisions(all_villages: Array) -> Array:
 				actions.append({"type": "propose_alliance", "target_id": v.village_id})
 
 		# Send gifts to improve relations
-		if rel < 20 and resources[Constants.ResourceType.GOLD] > 60 and randf() < 0.25:
+		if rel < 20 and resources[Constants.Resource.GOLD] > 60 and randf() < 0.25:
 			actions.append({"type": "send_gift", "target_id": v.village_id, "amount": 20})
 
 		# Propose peace if at war
@@ -120,13 +120,13 @@ func _trader_decisions(all_villages: Array) -> Array:
 			continue
 		# Open trade routes with neutral or friendly villages
 		if get_relationship(v.village_id) >= 0 and not trade_routes.has(v.village_id):
-			if randf() < 0.3 and resources[Constants.ResourceType.WOOD] > 100:
+			if randf() < 0.3 and resources[Constants.Resource.WOOD] > 100:
 				actions.append({
 					"type": "propose_trade",
 					"target_id": v.village_id,
-					"resource_give": Constants.ResourceType.WOOD,
+					"resource_give": Constants.Resource.WOOD,
 					"amount_give": 20,
-					"resource_receive": Constants.ResourceType.GOLD,
+					"resource_receive": Constants.Resource.GOLD,
 					"amount_receive": 15
 				})
 

@@ -126,9 +126,9 @@ func _do_attack() -> void:
 func _do_trade_dialog() -> void:
 	# Simple default trade: offer 20 Wood for 15 Gold
 	var extra = {
-		"resource_give": Constants.ResourceType.WOOD,
+		"resource_give": Constants.Resource.WOOD,
 		"amount_give": 20,
-		"resource_receive": Constants.ResourceType.GOLD,
+		"resource_receive": Constants.Resource.GOLD,
 		"amount_receive": 15
 	}
 	_do_action(Constants.DiplomacyAction.PROPOSE_TRADE, extra)
