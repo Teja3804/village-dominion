@@ -263,7 +263,7 @@ func _make_building_panel() -> Control:
 	var db := GameManager.building_db
 
 	for btype in Constants.BuildingType.values():
-		var def := db.get_definition(btype)
+		var def: BuildingDefinition = db.get_definition(btype)
 		if def == null:
 			continue
 		var row := HBoxContainer.new()
@@ -513,7 +513,7 @@ func _make_save_panel() -> Control:
 	vbox.add_child(list)
 
 	for slot in range(1, SaveManager.SAVE_SLOTS + 1):
-		var info := SaveManager.get_save_info(slot)
+		var info: Dictionary = SaveManager.get_save_info(slot)
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 14)
 
@@ -562,7 +562,7 @@ func _end_turn() -> void:
 # ---------- Diplomacy helpers ----------
 
 func _do_attack(target_id: int) -> void:
-	var result := GameManager.battle_manager.player_attack(target_id)
+	var result: Dictionary = GameManager.battle_manager.player_attack(target_id)
 	if result.is_empty():
 		return
 	var won := result.get("outcome") in [Constants.BattleOutcome.ATTACKER_WINS,
@@ -573,7 +573,7 @@ func _do_attack(target_id: int) -> void:
 	_close_panel()
 
 func _dipl_act(action: int, target_id: int, extra: Dictionary = {}) -> void:
-	var resp := GameManager.diplomacy_manager.player_action(action, target_id, extra)
+	var resp: Dictionary = GameManager.diplomacy_manager.player_action(action, target_id, extra)
 	_post("[color=%s]%s[/color]" % [
 		"#44ff88" if resp.get("success") else "#ffaa44",
 		resp.get("message", "")])
@@ -596,7 +596,7 @@ func _refresh_top_bar() -> void:
 		"Soldiers:%d" % v.soldiers,
 		"Morale:%d"   % v.morale,
 	]
-	var children := _top_bar.get_children()
+	var children: Array = _top_bar.get_children()
 	for i in range(min(labels.size(), children.size())):
 		if children[i] is Label:
 			children[i].text = labels[i]
@@ -653,7 +653,7 @@ func _show_battle_popup(result: Dictionary) -> void:
 		result.get("attacker_soldiers_lost", 0),
 		result.get("defender_soldiers_lost", 0)
 	]
-	var loot := result.get("resources_looted", {})
+	var loot: Dictionary = result.get("resources_looted", {})
 	if not loot.is_empty():
 		txt += "\n\n[color=#ffdd88]Looted:[/color]"
 		for res in loot:
