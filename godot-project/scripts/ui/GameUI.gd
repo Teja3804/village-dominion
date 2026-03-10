@@ -443,7 +443,7 @@ func _make_diplomacy_panel(preselect: int = -1) -> Control:
 		dh.a = 1.0
 		_style(btn, dc, dh)
 		btn.add_theme_color_override("font_color", state_col)
-		var cv := v
+		var cv: Village = v
 		btn.pressed.connect(func(): select_fn.call(cv))
 		left.add_child(btn)
 		if v.village_id == preselect:
@@ -491,7 +491,7 @@ func _make_trade_panel() -> Control:
 			var cb := Button.new()
 			cb.text = "Cancel"
 			_style(cb, C_DANGER, C_DANGER_HOV)
-			var vc := vid
+			var vc: int = vid
 			cb.pressed.connect(func():
 				GameManager.diplomacy_manager.player_action(Constants.DiplomacyAction.CANCEL_TRADE, vc)
 				_show_panel(_make_trade_panel())
