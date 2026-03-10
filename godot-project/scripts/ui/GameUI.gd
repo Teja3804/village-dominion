@@ -565,7 +565,7 @@ func _do_attack(target_id: int) -> void:
 	var result = GameManager.battle_manager.player_attack(target_id)
 	if not result or result.is_empty():
 		return
-	var won := result.get("outcome") in [Constants.BattleOutcome.ATTACKER_WINS,
+	var won: bool = result.get("outcome") in [Constants.BattleOutcome.ATTACKER_WINS,
 										  Constants.BattleOutcome.ATTACKER_CAPTURES]
 	_post("[color=%s]%s[/color]" % [
 		"#44ff88" if won else "#ff5555",
@@ -643,7 +643,7 @@ func _show_battle_popup(result: Dictionary) -> void:
 	var panel := _panel_base("Battle Result")
 	var vbox: VBoxContainer = panel.get_child(0)
 	var pid := GameManager.player_village.village_id
-	var won := (result.get("attacker_id") == pid
+	var won: bool = (result.get("attacker_id") == pid
 			and result.get("outcome") in [Constants.BattleOutcome.ATTACKER_WINS,
 										   Constants.BattleOutcome.ATTACKER_CAPTURES])
 	var col := "#44ff88" if won else "#ff5555"
