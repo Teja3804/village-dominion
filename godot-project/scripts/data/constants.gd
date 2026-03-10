@@ -144,4 +144,4 @@ const RELATION_CHANGE_WAR_WIN: int = -20
 const RELATION_CHANGE_WAR_LOSE: int = -10
 const RELATION_CHANGE_AID: int = 15
 const RELATION_CHANGE_THREAT: int = -15
-const RELATION_DECAY_PER_TURN: int = 1  # slowly drift toward neutral
+const RELATION_DECAY_PER_TURN: int = 1  
