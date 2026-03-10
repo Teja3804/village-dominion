@@ -29,7 +29,7 @@ var hovered_village_id: int = -1
 var pulse_timer: float = 0.0
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	EventBus.turn_started.connect(_on_turn_started)
 	EventBus.battle_resolved.connect(func(_r): queue_redraw())
 	EventBus.relationship_changed.connect(func(_a, _b, _c): queue_redraw())
@@ -221,15 +221,16 @@ func _get_village_pos(vid: int) -> Vector2:
 	var angle = (TAU / 8.0) * vid
 	return Vector2(640, 340) + Vector2(cos(angle), sin(angle)) * 280.0
 
-func _gui_input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		var vid = _village_at(event.position)
-		if vid >= 0 and vid != GameManager.player_village.village_id:
+		# Convert global mouse pos to local coords
+		var local_pos = get_global_transform().affine_inverse() * event.position
+		var vid = _village_at(local_pos)
+		if vid >= 0 and GameManager.player_village and vid != GameManager.player_village.village_id:
 			EventBus.panel_open_requested.emit("diplomacy", {"selected_id": vid})
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		var vid = _village_at(event.position)
+	elif event is InputEventMouseMotion:
+		var local_pos = get_global_transform().affine_inverse() * event.position
+		var vid = _village_at(local_pos)
 		if vid != hovered_village_id:
 			hovered_village_id = vid
 			queue_redraw()

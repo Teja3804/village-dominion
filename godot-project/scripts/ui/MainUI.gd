@@ -31,6 +31,18 @@ func _ready() -> void:
 	turn_label          = get_node_or_null("TurnLabel")
 	year_label          = get_node_or_null("YearLabel")
 
+	# Fix: non-interactive display nodes must not block mouse events
+	if notification_log:
+		notification_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if turn_label:
+		turn_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if year_label:
+		year_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if top_bar:
+		top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for child in top_bar.get_children():
+			child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	_spawn_world_map()
 	_hide_all_panels()
 	_build_nav_buttons()
@@ -58,6 +70,7 @@ func _build_nav_buttons() -> void:
 	bar.offset_right = -10.0
 	bar.alignment = BoxContainer.ALIGNMENT_CENTER
 	bar.add_theme_constant_override("separation", 16)
+	bar.z_index = 10
 	add_child(bar)
 
 	var btns = [
