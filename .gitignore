@@ -27,3 +27,4 @@ godot-project/saves/*.json
 # Python
 __pycache__/
 *.pyc
+village-dominion-(4.2)/
