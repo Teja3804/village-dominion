@@ -15,17 +15,11 @@ var village_name: String = "Unnamed Village"
 var is_player: bool = false
 var leader_name: String = "Unknown"
 
-# Resources
-var resources: Dictionary = {
-	Constants.ResourceType.FOOD: 0,
-	Constants.ResourceType.WOOD: 0,
-	Constants.ResourceType.STONE: 0,
-	Constants.ResourceType.GOLD: 0,
-	Constants.ResourceType.WEAPONS: 0
-}
+# Resources (keys match Constants.ResourceType: FOOD=0, WOOD=1, STONE=2, GOLD=3, WEAPONS=4)
+var resources: Dictionary = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
 
 # Storage
-var storage_cap: int = Constants.MAX_STORAGE_BASE
+var storage_cap: int = 500  # Constants.MAX_STORAGE_BASE
 
 # Population
 var population: int = 10

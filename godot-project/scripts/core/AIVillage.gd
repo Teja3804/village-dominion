@@ -4,7 +4,7 @@
 class_name AIVillage
 extends Village
 
-var personality: int = Constants.Personality.NEUTRAL if false else Constants.Personality.DIPLOMATIC
+var personality: int = 0  # Set via setup()
 
 # Aggression threshold — AI attacks if player strength ratio is below this
 var aggression_threshold: float = 1.2
