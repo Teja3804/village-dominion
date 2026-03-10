@@ -1,0 +1,54 @@
+{
+  "personalities": [
+    {
+      "id": 0,
+      "name": "Aggressive",
+      "description": "Prefers military expansion. Declares wars often. Rarely accepts peace.",
+      "war_tendency": 0.9,
+      "alliance_tendency": 0.1,
+      "trade_tendency": 0.2,
+      "build_priority": ["Barracks", "Blacksmith", "Farm", "House"],
+      "starting_soldiers_bonus": 7
+    },
+    {
+      "id": 1,
+      "name": "Diplomatic",
+      "description": "Prefers alliances and peaceful coexistence. Sends gifts often.",
+      "war_tendency": 0.1,
+      "alliance_tendency": 0.9,
+      "trade_tendency": 0.7,
+      "build_priority": ["Temple", "Market", "Farm", "House"],
+      "starting_gold_bonus": 30
+    },
+    {
+      "id": 2,
+      "name": "Trader",
+      "description": "Economy-focused. Opens trade routes aggressively. Avoids war.",
+      "war_tendency": 0.15,
+      "alliance_tendency": 0.6,
+      "trade_tendency": 0.95,
+      "build_priority": ["Market", "Warehouse", "Lumber Mill", "Farm"],
+      "starting_gold_bonus": 50
+    },
+    {
+      "id": 3,
+      "name": "Opportunist",
+      "description": "Attacks weakened villages. Switches allegiances based on advantage.",
+      "war_tendency": 0.6,
+      "alliance_tendency": 0.4,
+      "trade_tendency": 0.4,
+      "build_priority": ["Barracks", "Farm", "Market"],
+      "starting_soldiers_bonus": 3
+    },
+    {
+      "id": 4,
+      "name": "Isolationist",
+      "description": "Builds strong defenses and rarely interacts. Hard to invade.",
+      "war_tendency": 0.05,
+      "alliance_tendency": 0.05,
+      "trade_tendency": 0.1,
+      "build_priority": ["Walls", "Watchtower", "Farm", "Warehouse"],
+      "starting_stone_bonus": 100
+    }
+  ]
+}

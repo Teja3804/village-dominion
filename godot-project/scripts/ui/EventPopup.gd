@@ -1,31 +1,18 @@
+## EventPopup.gd
+## Shows a world event popup to the player.
+
 extends Control
 
-## Displays world event title, description, and effects. Shown when EventBus.event_triggered is emitted.
-
-@onready var title_label: Label = $Background/MarginContainer/VBox/TitleLabel
-@onready var desc_label: Label = $Background/MarginContainer/VBox/DescLabel
-@onready var effects_label: Label = $Background/MarginContainer/VBox/EffectsLabel
-@onready var button_close: Button = $Background/MarginContainer/VBox/ButtonClose
-
+@onready var title_label: Label = $TitleLabel
+@onready var description_label: Label = $DescriptionLabel
+@onready var ok_btn: Button = $OkButton
 
 func _ready() -> void:
-	visible = false
-	if EventBus:
-		EventBus.event_triggered.connect(_on_event_triggered)
-	if button_close:
-		button_close.pressed.connect(_on_close_pressed)
+	if ok_btn:
+		ok_btn.pressed.connect(func(): hide())
 
-
-func _on_event_triggered(event_data: Dictionary) -> void:
+func show_event(event: Dictionary) -> void:
 	if title_label:
-		title_label.text = event_data.get("title", "World Event")
-	if desc_label:
-		desc_label.text = event_data.get("description", "")
-	if effects_label:
-		var effects: String = event_data.get("effects", "")
-		effects_label.text = "Effects: " + (effects if effects else "—")
-	visible = true
-
-
-func _on_close_pressed() -> void:
-	visible = false
+		title_label.text = event.get("name", "Event")
+	if description_label:
+		description_label.text = event.get("description", "")

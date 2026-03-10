@@ -1,30 +1,31 @@
-extends RefCounted
+## building_definition.gd
+## Data class for a building type definition
+
 class_name BuildingDefinition
+extends Resource
 
-## Static definition for one building type. Used by BuildingDatabase and game logic.
-## Cost and production use GameConstants.ResourceType / BuildingType as keys.
+@export var id: int = 0
+@export var type_name: String = ""
+@export var description: String = ""
+@export var max_level: int = 3
+@export var base_cost: Dictionary = {}         # Resource -> amount
+@export var upgrade_cost_multiplier: float = 1.5
+@export var production_per_turn: Dictionary = {}  # Resource -> amount per level
+@export var consumption_per_turn: Dictionary = {} # Resource -> amount per level
+@export var population_capacity: int = 0       # bonus housing per level
+@export var defense_bonus: int = 0             # added to village defense
+@export var requires_building: int = -1        # BuildingType prerequisite (-1 = none)
+@export var requires_level: int = 0            # village level required
+@export var max_count: int = 99               # max of this building allowed
 
-var building_type_id: int = 0
-var display_name: String = ""
-var description: String = ""
-var cost: Dictionary = {}   # ResourceType (int) -> amount (int)
-var production: Dictionary = {}  # ResourceType (int) -> amount per tick (int)
-var max_level: int = 2
-var worker_slots: int = 2
-var population_cap_contribution: int = 0  # e.g. House, Town Hall
-var military_per_level: int = 0  # e.g. Barracks adds this much strength per level
-
+func get_cost_for_level(level: int) -> Dictionary:
+	var cost = {}
+	for res in base_cost:
+		cost[res] = int(base_cost[res] * pow(upgrade_cost_multiplier, level - 1))
+	return cost
 
 func get_production_at_level(level: int) -> Dictionary:
-	var result: Dictionary = {}
-	for res_type in production:
-		result[res_type] = production[res_type] * level
-	return result
-
-
-## Upgrade cost for a given level. For now, same as base cost per level (level 2 = build cost again).
-func get_cost_for_level(level: int) -> Dictionary:
-	var result: Dictionary = {}
-	for res_type in cost:
-		result[res_type] = cost[res_type]
-	return result
+	var prod = {}
+	for res in production_per_turn:
+		prod[res] = production_per_turn[res] * level
+	return prod

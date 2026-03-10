@@ -1,77 +1,147 @@
-extends RefCounted
-class_name GameConstants
+## constants.gd
+## Central constants file for Village Dominion
 
-## Central IDs and enums for Village Dominion. Single source of truth for type IDs.
-## Used by definitions, runtime state, and save/load. Do not store runtime state here.
+extends Node
 
-enum ResourceType {
-	NONE,
+# Resource Types
+enum Resource {
 	FOOD,
 	WOOD,
 	STONE,
 	GOLD,
-	IRON
+	WEAPONS
 }
 
+const RESOURCE_NAMES: Dictionary = {
+	Resource.FOOD: "Food",
+	Resource.WOOD: "Wood",
+	Resource.STONE: "Stone",
+	Resource.GOLD: "Gold",
+	Resource.WEAPONS: "Weapons"
+}
+
+# Building Types
 enum BuildingType {
-	NONE,
 	TOWN_HALL,
-	FARM,
-	LUMBER_CAMP,
-	QUARRY,
-	BARRACKS,
 	HOUSE,
-	WAREHOUSE,
+	FARM,
+	LUMBER_MILL,
+	QUARRY,
 	MARKET,
-	WALL
+	BARRACKS,
+	BLACKSMITH,
+	WALLS,
+	WATCHTOWER,
+	WAREHOUSE,
+	TEMPLE
 }
 
-enum PersonalityType {
-	NONE,
+const BUILDING_NAMES: Dictionary = {
+	BuildingType.TOWN_HALL: "Town Hall",
+	BuildingType.HOUSE: "House",
+	BuildingType.FARM: "Farm",
+	BuildingType.LUMBER_MILL: "Lumber Mill",
+	BuildingType.QUARRY: "Quarry",
+	BuildingType.MARKET: "Market",
+	BuildingType.BARRACKS: "Barracks",
+	BuildingType.BLACKSMITH: "Blacksmith",
+	BuildingType.WALLS: "Walls",
+	BuildingType.WATCHTOWER: "Watchtower",
+	BuildingType.WAREHOUSE: "Warehouse",
+	BuildingType.TEMPLE: "Temple"
+}
+
+# AI Personality Types
+enum Personality {
 	AGGRESSIVE,
-	CAUTIOUS,
-	MERCANTILE,
-	PROUD,
-	PRAGMATIC,
-	# AI simulation personalities (used by AIManager)
 	DIPLOMATIC,
 	TRADER,
-	OPPORTUNIST
+	OPPORTUNIST,
+	ISOLATIONIST
 }
 
+const PERSONALITY_NAMES: Dictionary = {
+	Personality.AGGRESSIVE: "Aggressive",
+	Personality.DIPLOMATIC: "Diplomatic",
+	Personality.TRADER: "Trader",
+	Personality.OPPORTUNIST: "Opportunist",
+	Personality.ISOLATIONIST: "Isolationist"
+}
+
+# Relationship States
+enum RelationState {
+	WAR,
+	HOSTILE,
+	NEUTRAL,
+	FRIENDLY,
+	ALLIED
+}
+
+# Thresholds for relationship states
+const RELATION_WAR: int = -80
+const RELATION_HOSTILE: int = -30
+const RELATION_FRIENDLY: int = 30
+const RELATION_ALLIED: int = 70
+
+# Diplomacy Actions
 enum DiplomacyAction {
-	GIFT,
-	TRADE,
-	REQUEST_ALLIANCE,
 	DECLARE_WAR,
-	OFFER_PEACE,
-	DEMAND_TRIBUTE,
-	REFUSE,
-	CANCEL_DEAL,
-	REQUEST_AID
+	PROPOSE_PEACE,
+	PROPOSE_ALLIANCE,
+	BREAK_ALLIANCE,
+	SEND_GIFT,
+	REQUEST_AID,
+	PROPOSE_TRADE,
+	CANCEL_TRADE,
+	THREATEN,
+	SEND_SPY
 }
 
-enum BattleType {
-	RAID,
-	INVASION
+# Battle outcomes
+enum BattleOutcome {
+	ATTACKER_WINS,
+	DEFENDER_WINS,
+	DRAW,
+	ATTACKER_CAPTURES
 }
 
-enum BattleResult {
-	VICTORY,   # attacker wins
-	DEFEAT,    # defender wins
-	DRAW
-}
-
-enum GameState {
-	PLAYING,
-	VICTORY,
-	DEFEAT
-}
-
-enum WorldEventType {
+# Game events
+enum EventType {
 	FAMINE,
-	BANDIT_RAID,
-	HARVEST_FESTIVAL,
-	POLITICAL_DISPUTE,
-	TRADE_BOOM
+	PLAGUE,
+	BANDIT_ATTACK,
+	BUMPER_HARVEST,
+	GOLD_RUSH,
+	REBELLION,
+	FESTIVAL,
+	EARTHQUAKE,
+	TRADE_ROUTE_DISRUPTED,
+	WANDERING_TRADER,
+	POLITICAL_CONFLICT,
+	MIGRATION
 }
+
+# Game balance constants
+const STARTING_FOOD: int = 200
+const STARTING_WOOD: int = 150
+const STARTING_STONE: int = 100
+const STARTING_GOLD: int = 50
+const STARTING_WEAPONS: int = 20
+
+const FOOD_PER_VILLAGER: float = 0.5
+const MAX_STORAGE_BASE: int = 500
+
+const SOLDIER_UPKEEP_GOLD: int = 1  # per soldier per turn
+const ATTACK_RANDOMNESS: float = 0.2  # ±20% random variance in combat
+
+const MAX_VILLAGES: int = 8
+const TURNS_PER_YEAR: int = 12
+const MAX_TURNS: int = 120  # 10 years
+
+const RELATION_CHANGE_GIFT: int = 10
+const RELATION_CHANGE_TRADE: int = 5
+const RELATION_CHANGE_WAR_WIN: int = -20
+const RELATION_CHANGE_WAR_LOSE: int = -10
+const RELATION_CHANGE_AID: int = 15
+const RELATION_CHANGE_THREAT: int = -15
+const RELATION_DECAY_PER_TURN: int = 1  # slowly drift toward neutral

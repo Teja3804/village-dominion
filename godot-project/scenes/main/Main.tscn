@@ -1,189 +1,416 @@
-[gd_scene load_steps=8 format=3 uid="uid://main_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://main_scene"]
 
 [ext_resource type="Script" path="res://scripts/core/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/ui/MainUI.gd" id="2_mainui"]
-[ext_resource type="PackedScene" uid="uid://building_panel" path="res://scenes/ui/BuildingPanel.tscn" id="3_building_panel"]
-[ext_resource type="PackedScene" uid="uid://diplomacy_panel" path="res://scenes/ui/DiplomacyPanel.tscn" id="4_diplomacy_panel"]
-[ext_resource type="PackedScene" uid="uid://battle_result_popup" path="res://scenes/ui/BattleResultPopup.tscn" id="5_battle_popup"]
-[ext_resource type="PackedScene" uid="uid://event_popup" path="res://scenes/ui/EventPopup.tscn" id="6_event_popup"]
-[ext_resource type="PackedScene" uid="uid://save_menu" path="res://scenes/ui/SaveMenu.tscn" id="7_save_menu"]
 
-[node name="Main" type="Control"]
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+[node name="MainUI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_main")
-
-[node name="VillageView" type="Node2D" parent="."]
-position = Vector2(0, 0)
-
-[node name="UICanvas" type="CanvasLayer" parent="."]
-
-[node name="TopBar" type="Control" parent="UICanvas"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 280.0
-grow_horizontal = 2
 script = ExtResource("2_mainui")
 
-[node name="MarginContainer" type="MarginContainer" parent="UICanvas/TopBar"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+[node name="TopBar" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 50.0
 
-[node name="VBox" type="VBoxContainer" parent="UICanvas/TopBar/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
+[node name="VillageLevelLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 200.0
+offset_bottom = 44.0
+text = "Lv.1 Your Village"
 
-[node name="RowVillage" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
+[node name="FoodLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 210.0
+offset_top = 6.0
+offset_right = 310.0
+offset_bottom = 44.0
+text = "Food: 200"
 
-[node name="LabelVillageName" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowVillage"]
-layout_mode = 2
-text = "Your Village"
+[node name="WoodLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 6.0
+offset_right = 420.0
+offset_bottom = 44.0
+text = "Wood: 150"
 
-[node name="RowResources" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 24
+[node name="StoneLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 6.0
+offset_right = 530.0
+offset_bottom = 44.0
+text = "Stone: 100"
 
-[node name="LabelFood" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowResources"]
-layout_mode = 2
-text = "Food: 0"
+[node name="GoldLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 6.0
+offset_right = 640.0
+offset_bottom = 44.0
+text = "Gold: 50"
 
-[node name="LabelWood" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowResources"]
-layout_mode = 2
-text = "Wood: 0"
+[node name="WeaponsLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 6.0
+offset_right = 750.0
+offset_bottom = 44.0
+text = "Weapons: 20"
 
-[node name="LabelGold" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowResources"]
-layout_mode = 2
-text = "Gold: 0"
+[node name="PopulationLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 6.0
+offset_right = 860.0
+offset_bottom = 44.0
+text = "Pop: 10/20"
 
-[node name="RowStats" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 24
+[node name="SoldiersLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 870.0
+offset_top = 6.0
+offset_right = 970.0
+offset_bottom = 44.0
+text = "Soldiers: 5"
 
-[node name="LabelPopulation" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowStats"]
-layout_mode = 2
-text = "Population: 0"
+[node name="MoraleLabel" type="Label" parent="MainUI/TopBar"]
+layout_mode = 0
+offset_left = 980.0
+offset_top = 6.0
+offset_right = 1080.0
+offset_bottom = 44.0
+text = "Morale: 70"
 
-[node name="LabelSoldiers" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowStats"]
-layout_mode = 2
-text = "Soldiers: 0"
+[node name="TurnLabel" type="Label" parent="MainUI"]
+layout_mode = 0
+offset_left = 1100.0
+offset_top = 58.0
+offset_right = 1280.0
+offset_bottom = 80.0
+text = "Turn 0 / 120"
 
-[node name="RowTick" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
+[node name="YearLabel" type="Label" parent="MainUI"]
+layout_mode = 0
+offset_left = 1100.0
+offset_top = 82.0
+offset_right = 1280.0
+offset_bottom = 104.0
+text = "Year 1"
 
-[node name="LabelTick" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowTick"]
-layout_mode = 2
-text = "Day: 0"
+[node name="EndTurnButton" type="Button" parent="MainUI"]
+layout_mode = 0
+offset_left = 1100.0
+offset_top = 650.0
+offset_right = 1270.0
+offset_bottom = 710.0
+text = "End Turn [Enter]"
 
-[node name="RowProduction" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
+[node name="NotificationLog" type="RichTextLabel" parent="MainUI"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 540.0
+offset_right = 600.0
+offset_bottom = 716.0
+bbcode_enabled = true
+scroll_following = true
+text = ""
 
-[node name="LabelProduction" type="Label" parent="UICanvas/TopBar/MarginContainer/VBox/RowProduction"]
-layout_mode = 2
-text = "Production: —"
+[node name="HotkeysLabel" type="Label" parent="MainUI"]
+layout_mode = 0
+offset_left = 610.0
+offset_top = 650.0
+offset_right = 1090.0
+offset_bottom = 716.0
+text = "[B] Build  [D] Diplomacy  [T] Trade  [F5] Save  [F9] Load  [Esc] Close Panel"
 
-[node name="ButtonNextTurn" type="Button" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
-text = "Next Turn"
+[node name="BuildingPanel" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 60.0
+offset_right = 650.0
+offset_bottom = 530.0
+visible = false
+script = ExtResource("res://scripts/ui/BuildingPanel.gd")
 
-[node name="RowButtons" type="HBoxContainer" parent="UICanvas/TopBar/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ButtonBuilding" type="Button" parent="UICanvas/TopBar/MarginContainer/VBox/RowButtons"]
-layout_mode = 2
+[node name="TitleLabel" type="Label" parent="MainUI/BuildingPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 30.0
 text = "Buildings"
 
-[node name="ButtonDiplomacy" type="Button" parent="UICanvas/TopBar/MarginContainer/VBox/RowButtons"]
+[node name="CloseButton" type="Button" parent="MainUI/BuildingPanel"]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 30.0
+text = "X"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainUI/BuildingPanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 600.0
+offset_bottom = 470.0
+
+[node name="BuildingList" type="VBoxContainer" parent="MainUI/BuildingPanel/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DiplomacyPanel" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 60.0
+offset_right = 750.0
+offset_bottom = 530.0
+visible = false
+script = ExtResource("res://scripts/ui/DiplomacyPanel.gd")
+
+[node name="TitleLabel" type="Label" parent="MainUI/DiplomacyPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 400.0
+offset_bottom = 30.0
 text = "Diplomacy"
 
-[node name="ButtonSave" type="Button" parent="UICanvas/TopBar/MarginContainer/VBox/RowButtons"]
+[node name="CloseButton" type="Button" parent="MainUI/DiplomacyPanel"]
+layout_mode = 0
+offset_left = 664.0
+offset_top = 4.0
+offset_right = 700.0
+offset_bottom = 30.0
+text = "X"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainUI/DiplomacyPanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 340.0
+offset_bottom = 470.0
+
+[node name="VillageList" type="VBoxContainer" parent="MainUI/DiplomacyPanel/ScrollContainer"]
 layout_mode = 2
-text = "Save / Load"
+size_flags_horizontal = 3
 
-[node name="BuildingPanel" parent="UICanvas" instance=ExtResource("3_building_panel")]
+[node name="DetailPanel" type="Control" parent="MainUI/DiplomacyPanel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 36.0
+offset_right = 700.0
+offset_bottom = 470.0
 visible = false
-layout_mode = 1
-anchors_preset = 0
-offset_left = 16.0
-offset_top = 290.0
-offset_right = 336.0
-offset_bottom = 710.0
 
-[node name="DiplomacyPanel" parent="UICanvas" instance=ExtResource("4_diplomacy_panel")]
-visible = false
-layout_mode = 1
-anchors_preset = 0
-offset_left = 16.0
-offset_top = 300.0
-offset_right = 336.0
-offset_bottom = 720.0
+[node name="VillageName" type="Label" parent="MainUI/DiplomacyPanel/DetailPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 350.0
+offset_bottom = 28.0
+text = "Village Name"
 
-[node name="BattleResultPopup" parent="UICanvas" instance=ExtResource("5_battle_popup")]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -140.0
-offset_right = 220.0
-offset_bottom = 140.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="VillageInfo" type="Label" parent="MainUI/DiplomacyPanel/DetailPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = 350.0
+offset_bottom = 150.0
+text = "Info"
+autowrap_mode = 3
 
-[node name="EventPopup" parent="UICanvas" instance=ExtResource("6_event_popup")]
+[node name="ActionButtons" type="VBoxContainer" parent="MainUI/DiplomacyPanel/DetailPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 155.0
+offset_right = 350.0
+offset_bottom = 430.0
+
+[node name="TradePanel" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 60.0
+offset_right = 650.0
+offset_bottom = 530.0
 visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -160.0
-offset_right = 220.0
+script = ExtResource("res://scripts/ui/TradePanel.gd")
+
+[node name="CloseButton" type="Button" parent="MainUI/TradePanel"]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 30.0
+text = "X"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainUI/TradePanel"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 36.0
+offset_right = 600.0
+offset_bottom = 470.0
+
+[node name="RouteList" type="VBoxContainer" parent="MainUI/TradePanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EventPopup" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 200.0
+offset_right = 890.0
+offset_bottom = 420.0
+visible = false
+script = ExtResource("res://scripts/ui/EventPopup.gd")
+
+[node name="TitleLabel" type="Label" parent="MainUI/EventPopup"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 496.0
+offset_bottom = 32.0
+text = "Event"
+
+[node name="DescriptionLabel" type="Label" parent="MainUI/EventPopup"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 36.0
+offset_right = 496.0
 offset_bottom = 160.0
-grow_horizontal = 2
-grow_vertical = 2
+text = ""
+autowrap_mode = 3
 
-[node name="SaveMenu" parent="UICanvas" instance=ExtResource("7_save_menu")]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -180.0
-offset_right = 200.0
-offset_bottom = 180.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="OkButton" type="Button" parent="MainUI/EventPopup"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 170.0
+offset_right = 300.0
+offset_bottom = 200.0
+text = "OK"
 
-[node name="GameOverScreen" type="Control" parent="UICanvas"]
+[node name="BattleResultPopup" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 150.0
+offset_right = 940.0
+offset_bottom = 500.0
 visible = false
-layout_mode = 1
+script = ExtResource("res://scripts/ui/BattleResultPopup.gd")
+
+[node name="TitleLabel" type="Label" parent="MainUI/BattleResultPopup"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 40.0
+text = "Battle Result"
+
+[node name="ResultLabel" type="RichTextLabel" parent="MainUI/BattleResultPopup"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 44.0
+offset_right = 596.0
+offset_bottom = 300.0
+bbcode_enabled = true
+text = ""
+
+[node name="OkButton" type="Button" parent="MainUI/BattleResultPopup"]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 310.0
+offset_right = 350.0
+offset_bottom = 344.0
+text = "OK"
+
+[node name="SaveMenu" type="Control" parent="MainUI"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 180.0
+offset_right = 890.0
+offset_bottom = 520.0
+visible = false
+script = ExtResource("res://scripts/ui/SaveMenu.gd")
+
+[node name="TitleLabel" type="Label" parent="MainUI/SaveMenu"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 496.0
+offset_bottom = 32.0
+text = "Save / Load Game"
+
+[node name="CloseButton" type="Button" parent="MainUI/SaveMenu"]
+layout_mode = 0
+offset_left = 464.0
+offset_top = 4.0
+offset_right = 496.0
+offset_bottom = 30.0
+text = "X"
+
+[node name="SlotList" type="VBoxContainer" parent="MainUI/SaveMenu"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 36.0
+offset_right = 496.0
+offset_bottom = 300.0
+
+[node name="GameOverScreen" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = null
+visible = false
+script = ExtResource("res://scripts/ui/GameOverScreen.gd")
+
+[node name="TitleLabel" type="Label" parent="GameOverScreen"]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 180.0
+offset_right = 840.0
+offset_bottom = 240.0
+horizontal_alignment = 1
+text = "GAME OVER"
+
+[node name="ReasonLabel" type="Label" parent="GameOverScreen"]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 260.0
+offset_right = 940.0
+offset_bottom = 310.0
+horizontal_alignment = 1
+text = ""
+autowrap_mode = 3
+
+[node name="StatsLabel" type="Label" parent="GameOverScreen"]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 320.0
+offset_right = 840.0
+offset_bottom = 520.0
+text = "Stats"
+
+[node name="NewGameButton" type="Button" parent="GameOverScreen"]
+layout_mode = 0
+offset_left = 490.0
+offset_top = 540.0
+offset_right = 640.0
+offset_bottom = 580.0
+text = "New Game"
+
+[node name="QuitButton" type="Button" parent="GameOverScreen"]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 540.0
+offset_right = 790.0
+offset_bottom = 580.0
+text = "Quit"

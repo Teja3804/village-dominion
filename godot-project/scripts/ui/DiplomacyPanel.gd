@@ -1,140 +1,143 @@
+## DiplomacyPanel.gd
+## Panel for diplomacy actions with other villages.
+
 extends Control
 
-## Lists AI villages with name, personality, relation score, and diplomacy action buttons.
-## Refreshes on EventBus.diplomacy_updated and when opened.
+@onready var village_list: VBoxContainer = $ScrollContainer/VillageList
+@onready var title_label: Label = $TitleLabel
+@onready var close_btn: Button = $CloseButton
+@onready var detail_panel: Control = $DetailPanel
+@onready var detail_name: Label = $DetailPanel/VillageName
+@onready var detail_info: Label = $DetailPanel/VillageInfo
+@onready var action_buttons: VBoxContainer = $DetailPanel/ActionButtons
 
-@onready var village_list: VBoxContainer = $MarginContainer/VBox/ScrollContainer/VillageList
-@onready var title_label: Label = $MarginContainer/VBox/TitleRow/TitleLabel
-@onready var close_button: Button = $MarginContainer/VBox/TitleRow/CloseButton
-@onready var message_label: Label = $MarginContainer/VBox/MessageLabel
-
-const ROW_SEPARATION: int = 8
-const PERSONALITY_NAMES: Dictionary = {
-	GameConstants.PersonalityType.NONE: "—",
-	GameConstants.PersonalityType.AGGRESSIVE: "Aggressive",
-	GameConstants.PersonalityType.CAUTIOUS: "Cautious",
-	GameConstants.PersonalityType.MERCANTILE: "Mercantile",
-	GameConstants.PersonalityType.PROUD: "Proud",
-	GameConstants.PersonalityType.PRAGMATIC: "Pragmatic",
-	GameConstants.PersonalityType.DIPLOMATIC: "Diplomatic",
-	GameConstants.PersonalityType.TRADER: "Trader",
-	GameConstants.PersonalityType.OPPORTUNIST: "Opportunist"
-}
-
+var selected_village_id: int = -1
 
 func _ready() -> void:
-	if close_button:
-		close_button.pressed.connect(_on_close_pressed)
-	if EventBus:
-		EventBus.diplomacy_updated.connect(_refresh)
-	_refresh()
+	if close_btn:
+		close_btn.pressed.connect(func(): EventBus.panel_close_requested.emit("diplomacy"))
+	EventBus.diplomacy_action_taken.connect(func(_d): refresh({}))
+	EventBus.relationship_changed.connect(func(_a, _b, _c): refresh({}))
 
+func refresh(data: Dictionary) -> void:
+	if title_label:
+		title_label.text = "Diplomacy"
+	if detail_panel:
+		detail_panel.hide()
 
-func _refresh() -> void:
-	_populate_list()
-
-
-func _populate_list() -> void:
-	if village_list == null or not GameManager:
+	if village_list == null:
 		return
-	for c in village_list.get_children():
-		c.queue_free()
 
-	var header = HBoxContainer.new()
-	header.add_theme_constant_override("separation", ROW_SEPARATION)
-	var h_name = Label.new()
-	h_name.custom_minimum_size.x = 100
-	h_name.text = "Village"
-	header.add_child(h_name)
-	var h_pers = Label.new()
-	h_pers.custom_minimum_size.x = 90
-	h_pers.text = "Personality"
-	header.add_child(h_pers)
-	var h_rel = Label.new()
-	h_rel.custom_minimum_size.x = 44
-	h_rel.text = "Rel"
-	header.add_child(h_rel)
-	# Spacer for buttons
-	var spacer = Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
-	village_list.add_child(header)
+	for child in village_list.get_children():
+		child.queue_free()
 
-	for ai in GameManager.ai_villages:
-		var a = ai as AIVillage
-		if a == null:
+	var player = GameManager.player_village
+	for v in GameManager.get_alive_villages():
+		if v.is_player:
 			continue
-		village_list.add_child(_make_row(a))
+		var row = _create_village_row(player, v)
+		village_list.add_child(row)
 
+func _create_village_row(player: Village, v: Village) -> Control:
+	var btn = Button.new()
+	var rel = player.get_relationship(v.village_id)
+	var state = _relation_state_name(player.get_relation_state(v.village_id))
+	btn.text = "%s  [%s: %d]  Str:%d" % [v.village_name, state, rel, v.get_defense_power()]
+	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	btn.pressed.connect(func(): _select_village(v.village_id))
+	return btn
 
-func _make_row(ai_village: AIVillage) -> Control:
-	var row = HBoxContainer.new()
-	row.add_theme_constant_override("separation", ROW_SEPARATION)
+func _select_village(vid: int) -> void:
+	selected_village_id = vid
+	var v = GameManager.get_village_by_id(vid)
+	var player = GameManager.player_village
+	if v == null or detail_panel == null:
+		return
 
-	var name_label = Label.new()
-	name_label.custom_minimum_size.x = 100
-	name_label.text = ai_village.display_name
-	name_label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	row.add_child(name_label)
+	detail_panel.show()
 
-	var personality_label = Label.new()
-	personality_label.custom_minimum_size.x = 90
-	personality_label.text = PERSONALITY_NAMES.get(ai_village.personality_type_id, "—")
-	row.add_child(personality_label)
+	if detail_name:
+		detail_name.text = v.village_name
+	if detail_info:
+		var rel = player.get_relationship(vid)
+		var state = _relation_state_name(player.get_relation_state(vid))
+		var personality = "Unknown"
+		if v is AIVillage:
+			personality = Constants.PERSONALITY_NAMES[v.personality]
+		detail_info.text = (
+			"Leader: %s\nPersonality: %s\nRelation: %s (%d)\n" +
+			"Population: %d | Soldiers: %d\nVillage Lv.%d"
+		) % [v.leader_name, personality, state, rel, v.population, v.soldiers, v.village_level]
 
-	var rel = GameManager.get_relation_to_ai(ai_village.village_id)
-	var rel_label = Label.new()
-	rel_label.custom_minimum_size.x = 44
-	rel_label.text = str(rel)
-	row.add_child(rel_label)
+	_rebuild_action_buttons(player, v)
 
-	var trade_btn = Button.new()
-	trade_btn.text = "Trade"
-	trade_btn.pressed.connect(_on_trade_pressed.bind(ai_village.village_id))
-	row.add_child(trade_btn)
+func _rebuild_action_buttons(player: Village, v: Village) -> void:
+	if action_buttons == null:
+		return
+	for child in action_buttons.get_children():
+		child.queue_free()
 
-	var alliance_btn = Button.new()
-	alliance_btn.text = "Alliance"
-	alliance_btn.pressed.connect(_on_alliance_pressed.bind(ai_village.village_id))
-	row.add_child(alliance_btn)
+	var at_war = player.is_at_war_with(v.village_id)
+	var allied = player.is_allied_with(v.village_id)
+	var rel = player.get_relationship(v.village_id)
+	var has_trade = player.trade_routes.has(v.village_id)
 
-	var war_btn = Button.new()
-	war_btn.text = "War"
-	war_btn.pressed.connect(_on_war_pressed.bind(ai_village.village_id))
-	row.add_child(war_btn)
+	if not at_war:
+		_add_action_btn("Declare War", func(): _do_action(Constants.DiplomacyAction.DECLARE_WAR))
+	else:
+		_add_action_btn("Propose Peace", func(): _do_action(Constants.DiplomacyAction.PROPOSE_PEACE))
 
-	var aid_btn = Button.new()
-	aid_btn.text = "Request Aid"
-	aid_btn.pressed.connect(_on_aid_pressed.bind(ai_village.village_id))
-	row.add_child(aid_btn)
+	if not allied and not at_war and rel >= 10:
+		_add_action_btn("Propose Alliance", func(): _do_action(Constants.DiplomacyAction.PROPOSE_ALLIANCE))
+	elif allied:
+		_add_action_btn("Break Alliance", func(): _do_action(Constants.DiplomacyAction.BREAK_ALLIANCE))
+		_add_action_btn("Request Aid", func(): _do_action(Constants.DiplomacyAction.REQUEST_AID))
 
-	return row
+	_add_action_btn("Send Gift (20 Gold)", func(): _do_action(Constants.DiplomacyAction.SEND_GIFT, {"amount": 20}))
+	_add_action_btn("Threaten", func(): _do_action(Constants.DiplomacyAction.THREATEN))
 
+	if not has_trade and not at_war:
+		_add_action_btn("Propose Trade", func(): _do_trade_dialog())
+	elif has_trade:
+		_add_action_btn("Cancel Trade Route", func(): _do_action(Constants.DiplomacyAction.CANCEL_TRADE))
 
-func _show_message(text: String) -> void:
-	if message_label:
-		message_label.text = text
+	# Attack button
+	if at_war or rel <= -50:
+		_add_action_btn("ATTACK!", func(): _do_attack())
 
+func _add_action_btn(label: String, callback: Callable) -> void:
+	var btn = Button.new()
+	btn.text = label
+	btn.pressed.connect(callback)
+	action_buttons.add_child(btn)
 
-func _on_trade_pressed(ai_id: String) -> void:
-	var result = GameManager.perform_diplomacy_action(GameConstants.DiplomacyAction.TRADE, ai_id)
-	_show_message(result.get("message", ""))
+func _do_action(action: int, extra: Dictionary = {}) -> void:
+	if selected_village_id < 0:
+		return
+	GameManager.diplomacy_manager.player_action(action, selected_village_id, extra)
+	_select_village(selected_village_id)  # Refresh detail view
 
+func _do_attack() -> void:
+	if selected_village_id < 0:
+		return
+	GameManager.battle_manager.player_attack(selected_village_id)
+	EventBus.panel_close_requested.emit("diplomacy")
 
-func _on_alliance_pressed(ai_id: String) -> void:
-	var result = GameManager.perform_diplomacy_action(GameConstants.DiplomacyAction.REQUEST_ALLIANCE, ai_id)
-	_show_message(result.get("message", ""))
+func _do_trade_dialog() -> void:
+	# Simple default trade: offer 20 Wood for 15 Gold
+	var extra = {
+		"resource_give": Constants.Resource.WOOD,
+		"amount_give": 20,
+		"resource_receive": Constants.Resource.GOLD,
+		"amount_receive": 15
+	}
+	_do_action(Constants.DiplomacyAction.PROPOSE_TRADE, extra)
 
-
-func _on_war_pressed(ai_id: String) -> void:
-	var result = GameManager.perform_diplomacy_action(GameConstants.DiplomacyAction.DECLARE_WAR, ai_id)
-	_show_message(result.get("message", ""))
-
-
-func _on_aid_pressed(ai_id: String) -> void:
-	var result = GameManager.perform_diplomacy_action(GameConstants.DiplomacyAction.REQUEST_AID, ai_id)
-	_show_message(result.get("message", ""))
-
-
-func _on_close_pressed() -> void:
-	visible = false
+func _relation_state_name(state: int) -> String:
+	match state:
+		Constants.RelationState.WAR: return "WAR"
+		Constants.RelationState.HOSTILE: return "Hostile"
+		Constants.RelationState.NEUTRAL: return "Neutral"
+		Constants.RelationState.FRIENDLY: return "Friendly"
+		Constants.RelationState.ALLIED: return "ALLIED"
+		_: return "Unknown"

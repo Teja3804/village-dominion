@@ -1,25 +1,29 @@
-# Godot
-godot-project/.godot/
-godot-project/*.translation
+# Godot 4 generated files
+.godot/
+*.uid
 
-# Saves (player data)
-godot-project/saves/*.json
-godot-project/saves/*.save
-!godot-project/saves/.gitkeep
+# Export directories
+export/
+builds/
+web-build/
 
-# Web build output
-web-build/*
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# IDE
-.idea/
+# Editor files
 *.swp
 *.swo
 *~
 
-# Build / export
-godot-project/export/
-*.zip
+# Logs
+*.log
+
+# Save files (keep structure, not player saves)
+godot-project/saves/*.save
+godot-project/saves/*.json
+
+# Python
+__pycache__/
+*.pyc

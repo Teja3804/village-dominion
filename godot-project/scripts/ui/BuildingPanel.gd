@@ -1,130 +1,109 @@
+## BuildingPanel.gd
+## Panel for constructing and upgrading buildings.
+
 extends Control
 
-## Building construction panel. Lists buildable buildings with cost, effect, and Build button.
-## Refreshes on resources_changed and buildings_changed. Shows error when build fails (e.g. insufficient resources).
+@onready var building_list: VBoxContainer = $ScrollContainer/BuildingList
+@onready var title_label: Label = $TitleLabel
+@onready var close_btn: Button = $CloseButton
 
-@onready var title_label: Label = $MarginContainer/VBox/TitleRow/TitleLabel
-@onready var close_button: Button = $MarginContainer/VBox/TitleRow/CloseButton
-@onready var error_label: Label = $MarginContainer/VBox/ErrorLabel
-@onready var building_list: VBoxContainer = $MarginContainer/VBox/ScrollContainer/BuildingList
-
-var _building_rows: Dictionary = {}  # building_type_id -> { panel, build_button, owned_label }
-
+const BuildingRowScene: PackedScene = null  # Will be instanced manually
 
 func _ready() -> void:
-	if EventBus:
-		EventBus.resources_changed.connect(_refresh)
-		EventBus.buildings_changed.connect(_refresh)
-	if close_button:
-		close_button.pressed.connect(_on_close_pressed)
-	_build_ui()
-	_refresh()
+	if close_btn:
+		close_btn.pressed.connect(func(): EventBus.panel_close_requested.emit("building"))
 
+func refresh() -> void:
+	if title_label:
+		title_label.text = "Buildings — %s" % GameManager.player_village.village_name
 
-func _build_ui() -> void:
-	if not GameManager:
+	if building_list == null:
 		return
-	var db: BuildingDatabase = GameManager.get_building_database()
-	if db == null:
-		return
-	for type_id in db.get_buildable_type_ids():
-		_add_building_row(type_id, db.get_definition(type_id))
 
+	# Clear old rows
+	for child in building_list.get_children():
+		child.queue_free()
 
-func _add_building_row(building_type_id: int, def: BuildingDefinition) -> void:
-	if def == null or building_list == null:
-		return
-	var row = _create_row(building_type_id, def)
-	building_list.add_child(row.container)
-	_building_rows[building_type_id] = row
+	var v = GameManager.player_village
+	var db = GameManager.building_db
 
+	# Show all available building types
+	for btype in Constants.BuildingType.values():
+		var def = db.get_definition(btype)
+		if def == null:
+			continue
 
-func _create_row(building_type_id: int, def: BuildingDefinition) -> Dictionary:
-	var db: BuildingDatabase = GameManager.get_building_database()
-	var container = VBoxContainer.new()
-	container.add_theme_constant_override("separation", 4)
+		var row = _create_building_row(v, def, btype)
+		building_list.add_child(row)
+
+func _create_building_row(v: Village, def: BuildingDefinition, btype: int) -> Control:
+	var container = HBoxContainer.new()
+	container.custom_minimum_size = Vector2(0, 40)
 
 	var name_label = Label.new()
-	name_label.text = def.display_name
-	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.text = def.type_name
+	name_label.custom_minimum_size = Vector2(140, 0)
 	container.add_child(name_label)
 
-	var cost_label = Label.new()
-	cost_label.text = "Cost: %s" % db.get_cost_string(def)
-	cost_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.7))
-	container.add_child(cost_label)
+	var level = v.get_building_level(btype)
+	var count = v.count_buildings_of_type(btype)
 
-	var effect_label = Label.new()
-	effect_label.text = db.get_effect_string(def)
-	effect_label.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
-	container.add_child(effect_label)
+	var status_label = Label.new()
+	if level > 0:
+		status_label.text = "Lv.%d (%d built)" % [level, count]
+	else:
+		status_label.text = "Not built"
+	status_label.custom_minimum_size = Vector2(120, 0)
+	container.add_child(status_label)
 
-	var owned_label = Label.new()
-	owned_label.name = "OwnedLabel"
-	owned_label.text = "Owned: 0"
-	container.add_child(owned_label)
+	# Build button
+	if count < def.max_count:
+		var cost = def.get_cost_for_level(1)
+		var can_build = v.can_afford(cost)
+		var build_btn = Button.new()
+		build_btn.text = "Build (%s)" % _format_cost(cost)
+		build_btn.disabled = not can_build
+		build_btn.pressed.connect(func(): _on_build_pressed(btype))
+		container.add_child(build_btn)
 
-	var build_btn = Button.new()
-	build_btn.text = "Build"
-	build_btn.pressed.connect(_on_build_pressed.bind(building_type_id))
-	container.add_child(build_btn)
+	# Upgrade button
+	if level > 0 and level < def.max_level:
+		var cost = def.get_cost_for_level(level + 1)
+		var can_upgrade = v.can_afford(cost)
+		var upgrade_btn = Button.new()
+		upgrade_btn.text = "Upgrade (%s)" % _format_cost(cost)
+		upgrade_btn.disabled = not can_upgrade
+		upgrade_btn.pressed.connect(func(): _on_upgrade_pressed(btype))
+		container.add_child(upgrade_btn)
 
-	var sep = HSeparator.new()
-	container.add_child(sep)
+	# Description tooltip
+	var desc_label = Label.new()
+	desc_label.text = def.description
+	desc_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	desc_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	container.add_child(desc_label)
 
-	return {
-		"container": container,
-		"build_button": build_btn,
-		"owned_label": owned_label
-	}
+	return container
 
+func _on_build_pressed(btype: int) -> void:
+	var success = GameManager.player_village.construct_building(btype)
+	if success:
+		EventBus.building_constructed.emit(GameManager.player_village.village_id, btype)
+		EventBus.notify("Built %s!" % Constants.BUILDING_NAMES[btype], "success")
+		refresh()
+	else:
+		EventBus.notify("Cannot build %s. Check resources or prerequisites." % Constants.BUILDING_NAMES[btype], "warning")
 
-func _refresh() -> void:
-	if not GameManager:
-		return
-	var db: BuildingDatabase = GameManager.get_building_database()
-	if db == null:
-		return
-	for type_id in _building_rows:
-		var row = _building_rows[type_id]
-		var def = db.get_definition(type_id)
-		var count: int = GameManager.get_player_building_count(type_id)
-		if row.owned_label:
-			row.owned_label.text = "Owned: %d" % count
-		if row.build_button and def != null:
-			row.build_button.disabled = not _can_afford(def)
+func _on_upgrade_pressed(btype: int) -> void:
+	var success = GameManager.player_village.upgrade_building(btype)
+	if success:
+		EventBus.notify("Upgraded %s!" % Constants.BUILDING_NAMES[btype], "success")
+		refresh()
+	else:
+		EventBus.notify("Cannot upgrade %s." % Constants.BUILDING_NAMES[btype], "warning")
 
-
-func _can_afford(def: BuildingDefinition) -> bool:
-	if not GameManager or not GameManager.player_village:
-		return false
-	for res_type in def.cost:
-		var need: int = def.cost[res_type]
-		var have: int = GameManager.player_village.get_resource(res_type)
-		if have < need:
-			return false
-	return true
-
-
-func _on_build_pressed(building_type_id: int) -> void:
-	_clear_error()
-	if not GameManager:
-		return
-	var success: bool = GameManager.place_building_auto(building_type_id)
-	if not success:
-		_set_error("Insufficient resources.")
-
-
-func _set_error(message: String) -> void:
-	if error_label:
-		error_label.text = message
-		error_label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
-
-
-func _clear_error() -> void:
-	if error_label:
-		error_label.text = ""
-
-
-func _on_close_pressed() -> void:
-	hide()
+func _format_cost(cost: Dictionary) -> String:
+	var parts = []
+	for res in cost:
+		parts.append("%d %s" % [cost[res], Constants.RESOURCE_NAMES[res]])
+	return ", ".join(parts)
