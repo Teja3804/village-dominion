@@ -3,11 +3,11 @@
 
 extends Control
 
-@onready var title_label: Label = $TitleLabel
-@onready var reason_label: Label = $ReasonLabel
-@onready var stats_label: Label = $StatsLabel
-@onready var new_game_btn: Button = $NewGameButton
-@onready var quit_btn: Button = $QuitButton
+@onready var title_label: Label = $VBoxLayout/TitleLabel
+@onready var reason_label: Label = $VBoxLayout/ReasonLabel
+@onready var stats_label: Label = $VBoxLayout/StatsLabel
+@onready var new_game_btn: Button = $VBoxLayout/ButtonRow/NewGameButton
+@onready var quit_btn: Button = $VBoxLayout/ButtonRow/QuitButton
 
 func _ready() -> void:
 	if new_game_btn:

@@ -3,9 +3,9 @@
 
 extends Control
 
-@onready var building_list: VBoxContainer = $ScrollContainer/BuildingList
-@onready var title_label: Label = $TitleLabel
-@onready var close_btn: Button = $CloseButton
+@onready var building_list: VBoxContainer = $VBoxLayout/ScrollContainer/BuildingList
+@onready var title_label: Label = $VBoxLayout/TitleRow/TitleLabel
+@onready var close_btn: Button = $VBoxLayout/TitleRow/CloseButton
 
 const BuildingRowScene: PackedScene = null  # Will be instanced manually
 

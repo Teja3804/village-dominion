@@ -3,9 +3,9 @@
 
 extends Control
 
-@onready var slot_list: VBoxContainer = $SlotList
-@onready var close_btn: Button = $CloseButton
-@onready var title_label: Label = $TitleLabel
+@onready var slot_list: VBoxContainer = $VBoxLayout/SlotList
+@onready var close_btn: Button = $VBoxLayout/TitleRow/CloseButton
+@onready var title_label: Label = $VBoxLayout/TitleRow/TitleLabel
 
 func _ready() -> void:
 	if close_btn:

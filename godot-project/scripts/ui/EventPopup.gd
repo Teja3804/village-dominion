@@ -3,9 +3,9 @@
 
 extends Control
 
-@onready var title_label: Label = $TitleLabel
-@onready var description_label: Label = $DescriptionLabel
-@onready var ok_btn: Button = $OkButton
+@onready var title_label: Label = $VBoxLayout/TitleLabel
+@onready var description_label: Label = $VBoxLayout/DescriptionLabel
+@onready var ok_btn: Button = $VBoxLayout/OkButton
 
 func _ready() -> void:
 	if ok_btn:

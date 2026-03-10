@@ -3,8 +3,8 @@
 
 extends Control
 
-@onready var route_list: VBoxContainer = $ScrollContainer/RouteList
-@onready var close_btn: Button = $CloseButton
+@onready var route_list: VBoxContainer = $VBoxLayout/ScrollContainer/RouteList
+@onready var close_btn: Button = $VBoxLayout/TitleRow/CloseButton
 
 func _ready() -> void:
 	if close_btn:

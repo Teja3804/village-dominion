@@ -3,13 +3,13 @@
 
 extends Control
 
-@onready var village_list: VBoxContainer = $ScrollContainer/VillageList
-@onready var title_label: Label = $TitleLabel
-@onready var close_btn: Button = $CloseButton
-@onready var detail_panel: Control = $DetailPanel
-@onready var detail_name: Label = $DetailPanel/VillageName
-@onready var detail_info: Label = $DetailPanel/VillageInfo
-@onready var action_buttons: VBoxContainer = $DetailPanel/ActionButtons
+@onready var village_list: VBoxContainer = $HBoxLayout/LeftPanel/ScrollContainer/VillageList
+@onready var title_label: Label = $HBoxLayout/LeftPanel/TitleRow/TitleLabel
+@onready var close_btn: Button = $HBoxLayout/LeftPanel/TitleRow/CloseButton
+@onready var detail_panel: Control = $HBoxLayout/DetailPanel
+@onready var detail_name: Label = $HBoxLayout/DetailPanel/VillageName
+@onready var detail_info: Label = $HBoxLayout/DetailPanel/VillageInfo
+@onready var action_buttons: VBoxContainer = $HBoxLayout/DetailPanel/ActionButtons
 
 var selected_village_id: int = -1
 
